@@ -1,5 +1,7 @@
 # Sales Project (now: PMARIS asset reliability)
 
+**Live site (snapshot):** https://adhamashraf40.github.io/pmaris-reliability-dashboard/
+
 An analytics engagement following the AIB902 Agentic Analytics method. Since
 11 October 2026 the source is `Group_9230_Team1_PMARIS_Enterprise_Dataset.csv`, an
 industrial asset-health file: 5,000 thirty-day observation windows, 60 columns, six

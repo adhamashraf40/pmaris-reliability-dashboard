@@ -63,4 +63,4 @@ Snapshot of where the project actually is.
 1. Approve the reactive-to-planned **pilot** (one site, one matched control).
 2. Approve the **second escalation trigger** after a crew-capacity check (134 → 567 escalated windows).
 3. Request a **stable Asset_ID** in the next export.
-4. Does the dashboard need hosting beyond local serving?
+4. ~~Hosting~~ Done 2026-10-11: public repo https://github.com/adhamashraf40/pmaris-reliability-dashboard, site https://adhamashraf40.github.io/pmaris-reliability-dashboard/ (static snapshot; badge reads "Snapshot").

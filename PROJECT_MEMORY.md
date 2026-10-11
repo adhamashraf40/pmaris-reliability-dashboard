@@ -351,3 +351,11 @@ the Maintenance Priority Index.** Never add or double-show derived pairs; exclud
 *Why:* 2026-10-11 the user's browser kept the retail-era `app.js` cached (same file name, plain
 `http.server` sends no cache headers), so every page rendered empty against the new feed.
 Diagnosed from the server log: 1 s polls of `live_data.json` and no `live_stamp.json` requests.
+
+**Published to GitHub Pages (public): https://adhamashraf40.github.io/pmaris-reliability-dashboard/**
+Repo `adhamashraf40/pmaris-reliability-dashboard`, branch `main`, root. The root `index.html` redirects to
+`03_Dashboard/index.html`; `.nojekyll` keeps every file served. Commits use the GitHub noreply email.
+*Why:* Pages has no watcher, so the site serves the committed `live_data.json`; `app.js` shows "Snapshot"
+on `*.github.io` instead of "Live". To update the site: re-run the watcher locally, then commit and push
+`03_Dashboard/live_data.json` and `live_stamp.json` (and bump `?v=` if app.js or styles.css changed).
+
