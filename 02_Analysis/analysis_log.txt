@@ -1,0 +1,254 @@
+
+============================================================================
+STAGE 0 - INTAKE  /  STAGE 1 - CLEANING CHECKLIST
+============================================================================
+rows=5000 cols=60  numeric=41  categorical=16
+date range 2025-09-01 -> 2026-08-31, 365 distinct dates, bad dates=0
+missing cells=0 exact dups=0 duplicate Observation_IDs=0 type errors=0
+rows per month: {'2025-09': 441, '2025-10': 421, '2025-11': 396, '2025-12': 443, '2026-01': 425, '2026-02': 357, '2026-03': 428, '2026-04': 386, '2026-05': 433, '2026-06': 420, '2026-07': 424, '2026-08': 426}
+levels under 1% of rows: {'Failure_Mode_Category': {'Control / Sensor': 16, 'Pressure / Hydraulic': 8, 'Overheating': 3}, 'Sensor_Health_Status': {'Degraded': 48}, 'Inspection_Status': {'Fail': 36}, 'Executive_Intervention_Priority': {'P1 - Immediate': 2}}
+columns piled at a bound (>=5% of rows):
+    Utilization_Rate_Pct {'max': 99.0, 'at_max_pct': 5.6, 'min': 22.18, 'at_min_pct': 0.0}
+    Failure_Count_12M {'max': 10.0, 'at_max_pct': 0.0, 'min': 0.0, 'at_min_pct': 34.5}
+    Preventive_Maintenance_Compliance_Pct {'max': 100.0, 'at_max_pct': 15.8, 'min': 20.66, 'at_min_pct': 0.0}
+    Unplanned_Downtime_Hours_30D {'max': 120.0, 'at_max_pct': 0.1, 'min': 0.0, 'at_min_pct': 9.2}
+    Spare_Parts_Cost_EGP_30D {'max': 18215.2, 'at_max_pct': 0.0, 'min': 0.0, 'at_min_pct': 17.2}
+    Inspection_Defect_Count {'max': 8.0, 'at_max_pct': 0.0, 'min': 0.0, 'at_min_pct': 25.1}
+    Production_Loss_Units {'max': 15116.0, 'at_max_pct': 0.0, 'min': 0.0, 'at_min_pct': 13.1}
+    Revenue_Loss_EGP_30D {'max': 6000000.0, 'at_max_pct': 0.0, 'min': 0.0, 'at_min_pct': 13.1}
+    Safety_Incident_Count_12M {'max': 4.0, 'at_max_pct': 0.1, 'min': 0.0, 'at_min_pct': 72.9}
+    Maintenance_Cost_Efficiency_Index {'max': 100.0, 'at_max_pct': 53.2, 'min': 0.0, 'at_min_pct': 0.7}
+observations beyond 3 SD: {'Unplanned_Downtime_Hours_30D': 102, 'Revenue_Loss_EGP_30D': 113, 'Failure_Probability_Pct': 0, 'Asset_Health_Index': 14, 'Maintenance_Cost_EGP_30D': 96, 'Financial_Exposure_At_Risk_EGP': 112}
+Load_Factor_Pct above 100%: 452 rows (overload, physically possible, kept)
+Asset_ID: 500 IDs; inconsistent attributes per ID: {'Site': 499, 'Asset_Type': 498, 'Criticality_Class': 498, 'Manufacturer_Group': 498, 'Maintenance_Strategy': 499}; age runs backwards for 497
+derived-column correlations: {'Financial_Exposure_vs_Revenue_Loss': 0.999, 'Failure_Probability_vs_Health_Index': -0.972, 'Operating_Hours_vs_Utilization': 0.918}
+Executive priority = banding of Maintenance_Priority_Index: {'P1 - Immediate': [79.2, 80.0, 2], 'P2 - High': [60.0, 74.0, 132], 'P3 - Planned': [40.0, 59.9, 1526], 'P4 - Monitor': [9.5, 40.0, 3340]}
+
+============================================================================
+STAGE 3 - INITIAL INSIGHTS
+============================================================================
+  observations           5000
+  revenue_loss_total     1,878,589,027.6
+  revenue_loss_mean      375,717.8
+  downtime_total         54,938.3
+  downtime_mean          11.0
+  high_risk_n            960
+  high_risk_pct          19.2
+  health_mean            84.6
+  maint_cost_total       126,446,825.0
+  spare_cost_total       16,912,572.1
+  exposure_total         2,219,559,524.3
+  pm_compliance_mean     80.8
+  mtbf_mean              1,274.1
+  mttr_mean              5.7
+  emergency_wo_pct       30.7
+  safety_incidents       1,662.0
+  priority_counts        {'P4 - Monitor': 3340, 'P3 - Planned': 1526, 'P2 - High': 132, 'P1 - Immediate': 2}
+  top 10% of observations carry 44.7% of revenue loss (top 20%: 64.8%); Gini 0.631; downtime top10 39.7% Gini 0.583
+  high-risk observations (960, 19.2%) carry 46.7% of revenue loss and 45.0% of downtime
+
+  Site
+    Cement Plant A                     n= 1009 downtime= 12.09h loss=   433,531 FP= 33.9% health= 82.9 highrisk= 22.7% emerg= 34.6%
+    Cement Plant B                     n=  830 downtime= 12.67h loss=   422,621 FP= 34.3% health= 82.7 highrisk= 24.3% emerg= 35.5%
+    Drilling Site East                 n=  877 downtime= 11.87h loss=   404,890 FP= 33.6% health= 83.1 highrisk= 24.6% emerg= 34.1%
+    Drilling Site West                 n=  721 downtime= 11.82h loss=   402,631 FP= 31.9% health= 83.8 highrisk= 20.8% emerg= 33.3%
+    Lab Equipment Facility             n=  807 downtime=  8.60h loss=   291,510 FP= 24.1% health= 87.4 highrisk= 11.4% emerg= 24.0%
+    Diagnostics Service Center         n=  756 downtime=  8.41h loss=   277,442 FP= 22.7% health= 88.2 highrisk=  9.4% emerg= 20.6%
+
+  Industry_Context
+    Cement Manufacturing               n= 1839 downtime= 12.35h loss=   428,607 FP= 34.1% health= 82.8 highrisk= 23.4% emerg= 35.0%
+    Oil & Gas Drilling                 n= 1598 downtime= 11.85h loss=   403,871 FP= 32.8% health= 83.4 highrisk= 22.9% emerg= 33.7%
+    Laboratory Equipment Manufacturing n=  807 downtime=  8.60h loss=   291,510 FP= 24.1% health= 87.4 highrisk= 11.4% emerg= 24.0%
+    In-Vitro Diagnostics / Medical     n=  756 downtime=  8.41h loss=   277,442 FP= 22.7% health= 88.2 highrisk=  9.4% emerg= 20.6%
+
+  Asset_Class
+    Material Handling                  n=  226 downtime= 13.57h loss=   501,519 FP= 36.7% health= 81.6 highrisk= 30.1% emerg= 42.0%
+    Separation Equipment               n=  243 downtime= 12.62h loss=   428,157 FP= 34.9% health= 82.6 highrisk= 26.3% emerg= 39.9%
+    Power Equipment                    n=  358 downtime= 11.86h loss=   421,308 FP= 30.8% health= 84.5 highrisk= 19.8% emerg= 30.7%
+    Drilling Equipment                 n=  458 downtime= 12.81h loss=   416,263 FP= 33.0% health= 83.2 highrisk= 22.7% emerg= 35.4%
+    Rotating Heavy Equipment           n=  926 downtime= 11.85h loss=   406,809 FP= 34.2% health= 82.8 highrisk= 22.5% emerg= 34.3%
+    Rotating Equipment                 n= 1705 downtime= 10.81h loss=   371,563 FP= 30.4% health= 84.5 highrisk= 19.4% emerg= 29.9%
+    Manufacturing Equipment            n=  350 downtime=  8.92h loss=   302,140 FP= 24.8% health= 87.1 highrisk= 11.4% emerg= 23.4%
+    Utility Equipment                  n=  369 downtime=  8.64h loss=   290,494 FP= 23.4% health= 88.0 highrisk= 10.8% emerg= 21.7%
+    Diagnostic Equipment               n=  255 downtime=  8.79h loss=   284,731 FP= 22.6% health= 88.2 highrisk=  9.0% emerg= 23.5%
+    Testing Equipment                  n=  110 downtime=  6.75h loss=   217,811 FP= 21.6% health= 88.5 highrisk= 10.0% emerg= 17.3%
+
+  Criticality_Class
+    Critical                           n=  880 downtime= 11.86h loss=   596,541 FP= 33.8% health= 83.4 highrisk= 23.3% emerg= 34.0%
+    High                               n= 1789 downtime= 11.10h loss=   428,598 FP= 31.0% health= 84.4 highrisk= 19.9% emerg= 30.9%
+    Medium                             n= 1724 downtime= 10.94h loss=   292,687 FP= 29.1% health= 85.0 highrisk= 17.6% emerg= 30.1%
+    Low                                n=  607 downtime=  9.52h loss=   135,548 FP= 27.1% health= 85.4 highrisk= 15.8% emerg= 26.7%
+
+  Maintenance_Strategy
+    Reactive                           n=  906 downtime= 19.04h loss=   623,766 FP= 50.5% health= 76.1 highrisk= 50.9% emerg= 55.8%
+    Preventive                         n= 2051 downtime=  9.52h loss=   334,030 FP= 26.8% health= 86.1 highrisk= 13.2% emerg= 25.6%
+    Condition-Based                    n=  901 downtime=  9.47h loss=   329,039 FP= 26.0% health= 86.4 highrisk= 11.9% emerg= 26.4%
+    Predictive                         n= 1142 downtime=  8.43h loss=   290,628 FP= 24.2% health= 87.1 highrisk= 10.7% emerg= 23.0%
+
+  Spare_Parts_Status
+    Shortage                           n=  426 downtime= 20.77h loss=   704,409 FP= 48.9% health= 75.0 highrisk= 50.0% emerg= 57.0%
+    Limited                            n= 2196 downtime= 13.24h loss=   449,760 FP= 35.0% health= 82.1 highrisk= 24.4% emerg= 37.5%
+    Available                          n= 2378 downtime=  7.15h loss=   248,460 FP= 22.7% health= 88.6 highrisk=  8.9% emerg= 19.6%
+
+  Technician_Skill_Level
+    Basic                              n=  586 downtime= 14.78h loss=   507,873 FP= 36.7% health= 82.2 highrisk= 27.5% emerg= 40.6%
+    Intermediate                       n= 1923 downtime= 12.42h loss=   418,632 FP= 32.6% health= 83.6 highrisk= 22.7% emerg= 35.9%
+    Advanced                           n= 1789 downtime=  9.38h loss=   320,679 FP= 27.3% health= 85.7 highrisk= 14.8% emerg= 25.9%
+    Expert                             n=  702 downtime=  8.01h loss=   288,108 FP= 26.6% health= 86.1 highrisk= 14.0% emerg= 20.2%
+
+  Operating_Shift
+    Night                              n= 1211 downtime= 11.40h loss=   414,547 FP= 30.3% health= 84.6 highrisk= 19.6% emerg= 31.8%
+    Evening                            n= 1410 downtime= 10.90h loss=   371,415 FP= 30.5% health= 84.5 highrisk= 20.4% emerg= 30.2%
+    Day                                n= 2379 downtime= 10.83h loss=   358,502 FP= 30.3% health= 84.6 highrisk= 18.3% emerg= 30.3%
+
+  Environment_Severity
+    Severe                             n= 1043 downtime= 13.55h loss=   470,739 FP= 37.5% health= 81.1 highrisk= 27.6% emerg= 40.2%
+    Harsh                              n= 1871 downtime= 11.70h loss=   398,462 FP= 32.9% health= 83.3 highrisk= 22.1% emerg= 32.9%
+    Moderate                           n= 1384 downtime=  9.86h loss=   337,564 FP= 26.6% health= 86.4 highrisk= 15.0% emerg= 26.4%
+    Controlled                         n=  702 downtime=  7.51h loss=   249,141 FP= 20.2% health= 89.4 highrisk=  7.3% emerg= 19.1%
+
+  Manufacturer_Group
+    OEM-A                              n= 1128 downtime= 11.47h loss=   389,922 FP= 30.8% health= 84.4 highrisk= 20.0% emerg= 32.4%
+    OEM-C                              n=  849 downtime= 11.15h loss=   386,810 FP= 30.2% health= 84.5 highrisk= 17.7% emerg= 31.7%
+    OEM-E                              n=  739 downtime= 11.09h loss=   380,373 FP= 30.9% health= 84.3 highrisk= 20.6% emerg= 31.3%
+    OEM-B                              n=  987 downtime= 10.97h loss=   367,232 FP= 30.1% health= 84.7 highrisk= 19.3% emerg= 30.5%
+    OEM-D                              n=  792 downtime= 10.30h loss=   365,220 FP= 30.0% health= 84.7 highrisk= 18.4% emerg= 28.0%
+    Legacy/Other                       n=  505 downtime= 10.59h loss=   351,581 FP= 29.8% health= 84.9 highrisk= 19.0% emerg= 28.7%
+
+  Failure_Mode_Group
+    Bearing / Vibration                n= 1320 downtime= 17.75h loss=   628,065 FP= 50.1% health= 76.1 highrisk= 47.2% emerg= 51.7%
+    Other (sensor / hydraulic / heat)  n=   27 downtime= 17.28h loss=   588,002 FP= 38.0% health= 81.9 highrisk= 22.2% emerg= 48.1%
+    Lubrication                        n=  784 downtime= 13.34h loss=   425,065 FP= 36.0% health= 82.7 highrisk= 24.1% emerg= 39.2%
+    General Mechanical                 n= 2869 downtime=  7.18h loss=   244,133 FP= 19.6% health= 89.0 highrisk=  4.9% emerg= 18.5%
+
+  monthly mean revenue loss slope 2,243 EGP/month (+0.60% of mean), lag-1 autocorr -0.17
+
+  strongest correlates of Revenue_Loss_EGP_30D:
+    Financial_Exposure_At_Risk_EGP               r=+0.999
+    Production_Loss_Units                        r=+0.944
+    Unplanned_Downtime_Hours_30D                 r=+0.851
+    Maintenance_Cost_EGP_30D                     r=+0.829
+    Failure_Count_12M                            r=+0.809
+    Labor_Hours_30D                              r=+0.806
+    Maintenance_Cost_Efficiency_Index            r=-0.721
+    Mean_Time_To_Repair_Hours                    r=+0.678
+    Reliability_Risk_Score                       r=+0.635
+    Downtime_Risk_Score                          r=+0.610
+
+  strongest correlates of Failure_Probability_Pct:
+    Reliability_Risk_Score                       r=+0.985
+    Asset_Health_Index                           r=-0.972
+    Downtime_Risk_Score                          r=+0.970
+    Replacement_Priority_Score                   r=+0.832
+    Maintenance_Priority_Index                   r=+0.751
+    Preventive_Maintenance_Effectiveness_Index   r=-0.737
+    Remaining_Useful_Life_Months                 r=-0.720
+    Vibration_mm_s                               r=+0.669
+    Mean_Time_Between_Failures_Hours             r=-0.622
+    Failure_Count_12M                            r=+0.618
+
+  strongest correlates of Unplanned_Downtime_Hours_30D:
+    Maintenance_Cost_EGP_30D                     r=+0.972
+    Failure_Count_12M                            r=+0.947
+    Labor_Hours_30D                              r=+0.940
+    Maintenance_Cost_Efficiency_Index            r=-0.929
+    Production_Loss_Units                        r=+0.897
+    Financial_Exposure_At_Risk_EGP               r=+0.858
+    Revenue_Loss_EGP_30D                         r=+0.851
+    Mean_Time_To_Repair_Hours                    r=+0.789
+    Quality_Defect_Rate_Pct                      r=+0.717
+    Reliability_Risk_Score                       r=+0.702
+
+============================================================================
+STAGE 3b - SIGNIFICANCE REGISTER (ANOVA F + Kruskal-Wallis, Bonferroni)
+============================================================================
+  Site                     x Unplanned_Downtime_Hours_30D F=   15.22 p= 7.12e-15 KW p= 5.41e-21 eta2=0.0150  -> REAL, small
+  Site                     x Revenue_Loss_EGP_30D         F=   13.30 p= 6.71e-13 KW p= 1.10e-19 eta2=0.0131  -> REAL, small
+  Site                     x Failure_Probability_Pct      F=   49.81 p= 1.65e-50 KW p= 3.87e-59 eta2=0.0475  -> REAL, small
+  Industry_Context         x Unplanned_Downtime_Hours_30D F=   25.10 p= 4.10e-16 KW p= 3.89e-22 eta2=0.0148  -> REAL, small
+  Industry_Context         x Revenue_Loss_EGP_30D         F=   22.11 p= 3.23e-14 KW p= 5.29e-21 eta2=0.0131  -> REAL, small
+  Industry_Context         x Failure_Probability_Pct      F=   82.19 p= 6.67e-52 KW p= 1.20e-60 eta2=0.0470  -> REAL, small
+  Asset_Class              x Unplanned_Downtime_Hours_30D F=    6.69 p= 1.42e-09 KW p= 9.34e-15 eta2=0.0119  -> REAL, small
+  Asset_Class              x Revenue_Loss_EGP_30D         F=    6.08 p= 1.53e-08 KW p= 1.99e-13 eta2=0.0109  -> REAL, small
+  Asset_Class              x Failure_Probability_Pct      F=   20.20 p= 9.47e-34 KW p= 5.85e-40 eta2=0.0352  -> REAL, small
+  Criticality_Class        x Unplanned_Downtime_Hours_30D F=    3.48 p=    0.015 KW p= 6.93e-05 eta2=0.0021  -> NOT SIGNIFICANT
+  Criticality_Class        x Revenue_Loss_EGP_30D         F=  113.71 p= 3.16e-71 KW p= 3.29e-83 eta2=0.0639  -> REAL, medium
+  Criticality_Class        x Failure_Probability_Pct      F=   14.50 p= 2.11e-09 KW p= 2.05e-10 eta2=0.0086  -> REAL but negligible
+  Maintenance_Strategy     x Unplanned_Downtime_Hours_30D F=  136.66 p= 4.25e-85 KW p= 8.55e-80 eta2=0.0758  -> REAL, medium
+  Maintenance_Strategy     x Revenue_Loss_EGP_30D         F=   81.91 p= 1.00e-51 KW p= 8.76e-57 eta2=0.0469  -> REAL, small
+  Maintenance_Strategy     x Failure_Probability_Pct      F=  396.04 p=8.70e-231 KW p=2.15e-174 eta2=0.1921  -> REAL, large
+  Spare_Parts_Status       x Unplanned_Downtime_Hours_30D F=  249.40 p=5.74e-104 KW p=1.74e-115 eta2=0.0908  -> REAL, medium
+  Spare_Parts_Status       x Revenue_Loss_EGP_30D         F=  173.99 p= 8.97e-74 KW p= 8.72e-76 eta2=0.0651  -> REAL, medium
+  Spare_Parts_Status       x Failure_Probability_Pct      F=  410.37 p=9.70e-166 KW p=4.76e-148 eta2=0.1411  -> REAL, large
+  Technician_Skill_Level   x Unplanned_Downtime_Hours_30D F=   41.40 p= 2.04e-26 KW p= 1.03e-23 eta2=0.0243  -> REAL, small
+  Technician_Skill_Level   x Revenue_Loss_EGP_30D         F=   28.06 p= 5.45e-18 KW p= 1.15e-19 eta2=0.0166  -> REAL, small
+  Technician_Skill_Level   x Failure_Probability_Pct      F=   42.89 p= 2.34e-27 KW p= 6.00e-28 eta2=0.0251  -> REAL, small
+  Operating_Shift          x Unplanned_Downtime_Hours_30D F=    0.72 p=    0.486 KW p=    0.885 eta2=0.0003  -> NOT SIGNIFICANT
+  Operating_Shift          x Revenue_Loss_EGP_30D         F=    4.31 p=    0.013 KW p=    0.843 eta2=0.0017  -> NOT SIGNIFICANT
+  Operating_Shift          x Failure_Probability_Pct      F=    0.07 p=    0.932 KW p=    0.864 eta2=0.0000  -> NOT SIGNIFICANT
+  Environment_Severity     x Unplanned_Downtime_Hours_30D F=   31.97 p= 1.85e-20 KW p= 1.09e-25 eta2=0.0188  -> REAL, small
+  Environment_Severity     x Revenue_Loss_EGP_30D         F=   26.98 p= 2.66e-17 KW p= 3.47e-22 eta2=0.0159  -> REAL, small
+  Environment_Severity     x Failure_Probability_Pct      F=  119.80 p= 6.38e-75 KW p= 6.07e-88 eta2=0.0671  -> REAL, medium
+  Manufacturer_Group       x Unplanned_Downtime_Hours_30D F=    0.78 p=    0.567 KW p=    0.564 eta2=0.0008  -> NOT SIGNIFICANT
+  Manufacturer_Group       x Revenue_Loss_EGP_30D         F=    0.54 p=    0.747 KW p=    0.297 eta2=0.0005  -> NOT SIGNIFICANT
+  Manufacturer_Group       x Failure_Probability_Pct      F=    0.32 p=    0.899 KW p=    0.963 eta2=0.0003  -> NOT SIGNIFICANT
+  Failure_Mode_Group       x Unplanned_Downtime_Hours_30D F=  210.48 p=1.45e-128 KW p=7.50e-129 eta2=0.1122  -> REAL, medium
+  Failure_Mode_Group       x Revenue_Loss_EGP_30D         F=  169.26 p=1.67e-104 KW p=3.36e-108 eta2=0.0923  -> REAL, medium
+  Failure_Mode_Group       x Failure_Probability_Pct      F=  971.56 p=  <1e-300 KW p=  <1e-300 eta2=0.3684  -> REAL, large
+
+  33 tests, Bonferroni threshold 0.05/33 = 0.00152
+
+============================================================================
+BOOTSTRAP 95% INTERVALS (2,000 resamples)
+============================================================================
+
+  Maintenance_Strategy -> Unplanned_Downtime_Hours_30D
+    Reactive                       mean=       19.04  95% CI [17.85, 20.19]  n=906
+    Preventive                     mean=        9.52  95% CI [9.00, 10.05]  n=2051
+    Condition-Based                mean=        9.47  95% CI [8.69, 10.33]  n=901
+    Predictive                     mean=        8.43  95% CI [7.83, 9.09]  n=1142
+
+  Spare_Parts_Status -> Unplanned_Downtime_Hours_30D
+    Shortage                       mean=       20.77  95% CI [18.98, 22.63]  n=426
+    Limited                        mean=       13.24  95% CI [12.60, 13.88]  n=2196
+    Available                      mean=        7.15  95% CI [6.78, 7.52]  n=2378
+
+  Criticality_Class -> Revenue_Loss_EGP_30D
+    Critical                       mean=  596,541.00  95% CI [549,092.87, 646,460.66]  n=880
+    High                           mean=  428,598.36  95% CI [402,630.40, 455,968.69]  n=1789
+    Medium                         mean=  292,687.09  95% CI [273,502.97, 313,541.77]  n=1724
+    Low                            mean=  135,548.49  95% CI [119,663.64, 151,505.86]  n=607
+
+  Site -> Revenue_Loss_EGP_30D
+    Cement Plant A                 mean=  433,531.28  95% CI [399,455.52, 469,637.20]  n=1009
+    Cement Plant B                 mean=  422,621.26  95% CI [385,076.37, 463,618.30]  n=830
+    Drilling Site East             mean=  404,890.05  95% CI [370,847.15, 444,732.79]  n=877
+    Drilling Site West             mean=  402,631.41  95% CI [362,176.75, 445,305.29]  n=721
+    Lab Equipment Facility         mean=  291,510.02  95% CI [263,592.30, 321,695.97]  n=807
+    Diagnostics Service Center     mean=  277,441.67  95% CI [247,395.78, 311,457.82]  n=756
+
+  Technician_Skill_Level -> Unplanned_Downtime_Hours_30D
+    Basic                          mean=       14.78  95% CI [13.34, 16.29]  n=586
+    Intermediate                   mean=       12.42  95% CI [11.76, 13.12]  n=1923
+    Advanced                       mean=        9.38  95% CI [8.84, 9.94]  n=1789
+    Expert                         mean=        8.01  95% CI [7.28, 8.83]  n=702
+
+============================================================================
+CONTROLLABLE LEVERS - downtime and loss by band
+============================================================================
+  Preventive_Maintenance_Compliance_Pct < 80: {'n': 2117, 'downtime_mean': 16.021091166745393, 'loss_mean': 534687.7476334436, 'fp_mean': 42.32047709022201}  |  >= 80: {'n': 2883, 'downtime_mean': 7.291599028789456, 'loss_mean': 258985.4546895595, 'fp_mean': 21.55886923343739}  p=4.37e-113 eta2=0.097
+  Days_Since_Last_Maintenance < 60: {'n': 3364, 'downtime_mean': 8.69524970273484, 'loss_mean': 303321.519479786, 'fp_mean': 24.433956599286564}  |  >= 60: {'n': 1636, 'downtime_mean': 15.701411980440097, 'loss_mean': 524581.562396088, 'fp_mean': 42.512738386308065}  p=4.33e-65 eta2=0.056
+  Lubricant_Quality_Index < 50: {'n': 1956, 'downtime_mean': 15.799028629856851, 'loss_mean': 530019.9812474437, 'fp_mean': 43.3559100204499}  |  >= 50: {'n': 3044, 'downtime_mean': 7.89600197109067, 'loss_mean': 276566.99878120894, 'fp_mean': 21.99162614980289}  p=7.02e-90 eta2=0.078
+  Maintenance_Backlog_Days < 14: {'n': 2876, 'downtime_mean': 7.676491655076495, 'loss_mean': 264461.0878164117, 'fp_mean': 23.90566411682893}  |  >= 14: {'n': 2124, 'downtime_mean': 15.471158192090396, 'loss_mean': 526364.848893597, 'fp_mean': 39.07437853107345}  p=1.07e-89 eta2=0.078
+  health {'band': '<70', 'n': 419, 'loss_mean': 1128183.7346300716, 'downtime_mean': 31.728090692124105, 'fp_mean': 76.91011933174224}
+  health {'band': '70-79', 'n': 1001, 'loss_mean': 636145.5017482517, 'downtime_mean': 18.483926073926074, 'fp_mean': 51.71625374625375}
+  health {'band': '80-89', 'n': 1941, 'loss_mean': 290357.7854662545, 'downtime_mean': 8.670829469345698, 'fp_mean': 26.455270479134466}
+  health {'band': '90+', 'n': 1639, 'loss_mean': 125389.83158023185, 'downtime_mean': 3.850988407565589, 'fp_mean': 10.008346552776082}
+
+============================================================================
+P1/P2 WATCHLIST
+============================================================================
+  top-decile-loss observations by priority: {'P2 - High': 97, 'P3 - Planned': 335, 'P4 - Monitor': 66, 'P1 - Immediate': 2}; P1/P2 cover 26.5% of that loss; high-risk (FP>=50%) but only P3/P4: 829
+  134 P1/P2 observations, exposure 263,080,232 EGP (11.9% of total); by site {'Diagnostics Service Center': 11, 'Cement Plant B': 27, 'Drilling Site East': 24, 'Lab Equipment Facility': 16, 'Cement Plant A': 35, 'Drilling Site West': 21}
+
+wrote findings.json

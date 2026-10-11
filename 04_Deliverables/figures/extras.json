@@ -1,0 +1,114 @@
+{
+ "heatmap": {
+  "rows": [
+   "Reactive",
+   "Preventive",
+   "Condition-Based",
+   "Predictive"
+  ],
+  "cols": [
+   "Shortage",
+   "Limited",
+   "Available"
+  ],
+  "values": [
+   [
+    26.308266666666665,
+    20.012886029411764,
+    11.381745283018867
+   ],
+   [
+    20.003594771241833,
+    10.616546329723226,
+    7.162305529522024
+   ],
+   [
+    16.447777777777777,
+    11.706986666666666,
+    6.903601694915254
+   ],
+   [
+    13.801739130434783,
+    11.172085201793722,
+    5.893460925039872
+   ]
+  ],
+  "counts": [
+   [
+    150,
+    544,
+    212
+   ],
+   [
+    153,
+    831,
+    1067
+   ],
+   [
+    54,
+    375,
+    472
+   ],
+   [
+    69,
+    446,
+    627
+   ]
+  ]
+ },
+ "gap": {
+  "by_site": {
+   "Cement Plant A": 194,
+   "Drilling Site East": 193,
+   "Cement Plant B": 175,
+   "Drilling Site West": 129,
+   "Lab Equipment Facility": 77,
+   "Diagnostics Service Center": 61
+  },
+  "rule_adds": 433,
+  "rule_exposure": 434328309.54,
+  "gap_exposure": 723329471.62
+ },
+ "drivers_inputs": [
+  [
+   "Preventive_Maintenance_Compliance_Pct",
+   -0.376
+  ],
+  [
+   "Vibration_mm_s",
+   0.354
+  ],
+  [
+   "Lubricant_Quality_Index",
+   -0.333
+  ],
+  [
+   "Maintenance_Backlog_Days",
+   0.332
+  ],
+  [
+   "Days_Since_Last_Maintenance",
+   0.29
+  ],
+  [
+   "Asset_Age_Years",
+   0.252
+  ],
+  [
+   "Spare_Parts_Lead_Time_Days",
+   0.235
+  ],
+  [
+   "Load_Factor_Pct",
+   0.207
+  ],
+  [
+   "Temperature_C",
+   0.201
+  ],
+  [
+   "Utilization_Rate_Pct",
+   0.175
+  ]
+ ]
+}

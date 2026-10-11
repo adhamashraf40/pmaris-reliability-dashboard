@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Data quality · Sales 2024</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">Sales 2024 <span>· Live Decision Dashboard</span></div>
+    <nav class="pages">
+      <a href="index.html">Overview</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="categories.html">Categories</a>
+      <a href="geography.html">Geography</a>
+      <a href="customers.html">Customers</a>
+      <a href="quality.html">Data quality</a>
+    </nav>
+    <div class="spacer"></div>
+    <span class="live"><span class="dot"></span><span class="live-text">Connecting…</span></span>
+    <button class="theme-btn" type="button">Dark</button>
+  </div>
+</header>
+<main class="wrap">
+  <div class="page-head">
+    <div class="eyebrow">Data quality</div>
+    <h1>Clean is not the same as fit for purpose</h1>
+    <p class="insight"><b>Eight cleaning checks passed with zero defects. Seven tests of meaning all failed.</b> Clean is not the same as fit for purpose.</p>
+  </div>
+
+  <div class="notice is-critical">
+    <span class="ico" aria-hidden="true">■</span>
+    <div><strong>Read the totals, not the rankings.</strong> <span id="q-headline">Every difference on this dashboard is inside the range random variation produces.</span> No ranking on any page of this dashboard is a finding, and none of them is an instruction.</div>
+  </div>
+
+  <div class="kpi-row">
+    <div class="kpi">
+      <div class="label">Rows in file</div>
+      <div class="value" id="k-rows">—</div>
+      <div class="sub">9 columns, calendar year 2024</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Cleaning checks passed</div>
+      <div class="value" style="color:var(--good)">8 / 8</div>
+      <div class="sub">zero defects, zero repairs needed</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Tests of meaning failed</div>
+      <div class="value" style="color:var(--critical)" id="k-tests">—</div>
+      <div class="sub">no dimension carries a signal</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Benford chi-square</div>
+      <div class="value">442</div>
+      <div class="sub">p = 2e-90 · amounts are generated</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Power at 1,000 rows</div>
+      <div class="value">21%</div>
+      <div class="sub">to detect a 20% lift · 80% is the bar</div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <section class="panel">
+      <h2>This dataset is technically flawless and analytically empty.</h2>
+      <p class="note">The finding of the quality review, stated plainly.</p>
+      <p style="margin:0 0 12px;color:var(--text-secondary);line-height:1.6;max-width:74ch">Every cleaning check a data engineer would run came back clean on the first pass. One thousand rows, nine columns, no missing values, no disguised nulls, no duplicates, no header damage, no impossible dates, no outliers to trim. Nothing needed repairing, so nothing was repaired. As a file, it arrives in better shape than most production exports.</p>
+      <p style="margin:0;color:var(--text-secondary);line-height:1.6;max-width:74ch">Then it was tested for meaning, and it failed every test. Revenue does not vary by category, by city, by gender or by their interaction beyond what chance produces at this sample size. The twelve-month trend is flat. Revenue is uncorrelated with the quantity sold. The leading digits of the revenue column do not follow Benford's law — they follow a flat random draw. The file is clean because it was generated, and being generated is exactly why it cannot answer a business question.</p>
+    </section>
+  </div>
+
+  <div class="grid two">
+    <section class="panel">
+      <h2>Eight cleaning checks, zero defects</h2>
+      <p class="note">Run before any analysis. Every check returned a clean result, so no rows were dropped, imputed or corrected.</p>
+      <div class="panel-scroll" id="q-passed"></div>
+    </section>
+
+    <section class="panel">
+      <h2>Seven tests of meaning, zero signals</h2>
+      <p class="note">Run after cleaning, live from the data contract. A verdict of "no signal" means the observed spread is what random variation produces at <span class="js-rows">1,000</span> rows.</p>
+      <div class="panel-scroll" id="q-failed"></div>
+    </section>
+  </div>
+
+  <div class="grid">
+    <section class="panel">
+      <h2>Three columns that do not mean what they are named</h2>
+      <p class="note">These are not dirty values. Each value is internally valid; it is the relationship the column name promises that is absent.</p>
+    </section>
+  </div>
+
+  <div class="grid two" id="q-columns"></div>
+
+  <div class="grid">
+    <section class="panel">
+      <h2>Leading digit of every revenue value, against Benford's law</h2>
+      <p class="note">Genuine financial amounts follow Benford's law. These do not: chi-square 442, p = 2e-90. The values match a flat random draw between 101 and 4,995.</p>
+      <div class="legend">
+        <span class="legend-item"><span class="swatch" style="background:var(--series-1)"></span>Observed in this file</span>
+        <span class="legend-item"><span class="swatch" style="background:var(--series-2)"></span>Benford's law prediction</span>
+      </div>
+      <div id="q-benford"></div>
+      <details class="table-view">
+        <summary>View as table</summary>
+        <div class="panel-scroll" id="q-benford-table"></div>
+      </details>
+    </section>
+  </div>
+
+  <div class="grid two">
+    <section class="panel">
+      <h2>What would fix it</h2>
+      <p class="note">A specification for the export that would work, not a complaint about this one. Rows needed for 80% power to detect a revenue lift on a single city.</p>
+      <div class="panel-scroll" id="q-power"></div>
+      <div class="notice">
+        <span class="ico" aria-hidden="true">▲</span>
+        <div>At the current <strong><span class="js-rows">1,000</span> rows</strong>, power to detect a 20% lift on one city is <strong>21%</strong>, against the conventional 80% minimum. Four in five real effects of that size would be missed. A <strong>6,000-row</strong> export of the same nine columns clears the bar; adding a cost column and stable product and customer keys turns it into a decision dataset.</div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>What cannot be built from this file</h2>
+      <p class="note">Live from the data contract. Each item is blocked by a specific column failure above, not by analyst time.</p>
+      <ul id="q-blocked" style="margin:0;padding-left:20px;color:var(--text-secondary);line-height:1.6;font-size:13.5px"></ul>
+    </section>
+  </div>
+
+  <div class="through-line">
+    <b>The honest summary:</b> this file is fit for demonstrating a pipeline, a dashboard or a cleaning routine. It is not fit for choosing a city, a category or a customer segment — and a dashboard that ranks them without saying so is making the mistake this page exists to prevent.
+  </div>
+
+  <footer class="foot">
+    Source: sales_data_large.csv, <span class="js-rows">1,000</span> rows, calendar year 2024. Figures recompute live.
+    Statistical caveats: see <a href="quality.html">Data quality</a>.
+  </footer>
+</main>
+<script src="app.js"></script>
+<script>
+LDD.start(function render(d) {
+  const lim     = d.limitations || {};
+  const tests   = lim.tests   || [];
+  const blocked = lim.blocked || [];
+  const q = s => document.querySelector(s);
+
+  /* ------------------------------------------------------------ live KPIs */
+  q('#k-rows').textContent  = LDD.fmt.int(d.row_count);
+  q('#k-tests').textContent = tests.length + ' / ' + tests.length;
+  if (lim.headline) q('#q-headline').textContent = lim.headline;
+
+  const good = t => '<span style="color:var(--good);font-weight:600">' + t + '</span>';
+  const bad  = t => '<span style="color:var(--critical);font-weight:600">' + t + '</span>';
+
+  /* ----------------------------------------------------- 2. passed checks */
+  const passed = [
+    ['Row and column count',               LDD.fmt.int(d.row_count) + ' rows, 9 columns'],
+    ['Type conformance',                   '0 non-conforming values'],
+    ['Header integrity',                   'clean, no title row'],
+    ['Missing values and disguised nulls', '0 blanks, 0 sentinels'],
+    ['Exact and near-duplicate rows',      '0 of each'],
+    ['Outliers and implausible values',    'none'],
+    ['Constant or near-constant columns',  'none above 95%'],
+    ['Date continuity across 2024',        '345 of 366 days carry a sale, longest gap 1 day']
+  ];
+  LDD.dataTable(q('#q-passed'),
+    [{ label: 'Check' }, { label: 'Result' }, { label: 'Verdict' }],
+    passed.map(r => [r[0], good(r[1]), good('pass')]));
+
+  /* ------------------------------------------------------ 3. failed tests */
+  LDD.dataTable(q('#q-failed'),
+    [{ label: 'Test of meaning' }, { label: 'Result' }, { label: 'Verdict' }],
+    tests.map(t => [t.test, t.result, bad(t.verdict)]));
+
+  /* ---------------------------------------------------- 4. broken columns */
+  const cols = [
+    { name: 'ProductID',
+      lead: '100 distinct IDs · all 100 span more than one category',
+      implies: 'A stable identifier for one product, so lines can be rolled up into a product-level view.',
+      shows:   'Every one of the 100 IDs appears under two or more product categories. The same ID is Apparel on one row and Electronics on the next, so it identifies nothing.',
+      blocks:  'Best and worst sellers, product mix, assortment decisions, anything named at SKU level.' },
+    { name: 'CustomerID',
+      lead: '631 distinct IDs · 258 of them internally inconsistent',
+      implies: 'One person, whose attributes stay fixed across their own purchases.',
+      shows:   '258 of the 631 IDs carry more than one age or gender across their own rows. The key is reused, not owned.',
+      blocks:  'Repeat purchase, retention and churn, customer lifetime value, cohorts, any per-person segmentation.' },
+    { name: 'SalesRevenue',
+      lead: 'r = -0.06 against QuantitySold',
+      implies: 'Money taken on the line, and therefore quantity multiplied by a unit price.',
+      shows:   'Revenue and quantity are effectively uncorrelated (r = -0.06). Dividing one by the other gives a unit price that moves at random, and the file carries no cost column at all.',
+      blocks:  'Unit price, basket value, margin and profit, discount analysis, price elasticity.' }
+  ];
+  const mountCols = q('#q-columns');
+  mountCols.innerHTML = '';
+  const lbl = t => '<div style="font-size:11.5px;font-weight:600;letter-spacing:.05em;' +
+                   'text-transform:uppercase;color:var(--text-muted);margin-bottom:5px">' + t + '</div>';
+  const body = t => '<p style="margin:0 0 14px;color:var(--text-secondary);line-height:1.55;font-size:13.5px">' + t + '</p>';
+  cols.forEach(c => {
+    mountCols.appendChild(LDD.el('section', 'panel',
+      '<h2>' + c.name + '</h2>' +
+      '<p class="note">' + c.lead + '</p>' +
+      lbl('What the name implies') + body(c.implies) +
+      lbl('What the data shows')   + body(c.shows) +
+      lbl('What it blocks') +
+      '<p style="margin:0;color:var(--critical);line-height:1.55;font-size:13.5px">' + c.blocks + '</p>'));
+  });
+
+  /* ---------------------------------------------------- 5. Benford chart */
+  const digits = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+  const obs = [23.6, 20.8, 22.9, 23.3, 1.8, 2.0, 1.5, 2.1, 2.0];
+  const ben = [30.1, 17.6, 12.5,  9.7, 7.9, 6.7, 5.8, 5.1, 4.6];
+
+  const W = 760, H = 310, ml = 46, mr = 14, mt = 22, mb = 46;
+  const pw = W - ml - mr, ph = H - mt - mb, ymax = 32;
+  const yOf = v => mt + ph - (v / ymax) * ph;
+  const gw = pw / digits.length, bw = 30, gap = 5;
+  const off = (gw - (bw * 2 + gap)) / 2;
+
+  let svg = '';
+  [0, 8, 16, 24, 32].forEach(v => {
+    svg += '<line class="' + (v === 0 ? 'baseline' : 'gridline') + '" x1="' + ml + '" x2="' + (W - mr) +
+           '" y1="' + yOf(v) + '" y2="' + yOf(v) + '"/>' +
+           '<text class="axis-label" x="' + (ml - 8) + '" y="' + (yOf(v) + 4) +
+           '" text-anchor="end">' + v + '%</text>';
+  });
+
+  digits.forEach((dg, i) => {
+    const gx = ml + i * gw;
+    const pair = [
+      { x: gx + off,            v: obs[i], c: 'var(--series-1)', n: 'Observed' },
+      { x: gx + off + bw + gap, v: ben[i], c: 'var(--series-2)', n: 'Benford' }
+    ];
+    const tip = "<div class='t-title'>Leading digit " + dg + "</div>" +
+                "<div class='t-row'><span>Observed</span><span>" + obs[i].toFixed(1) + "%</span></div>" +
+                "<div class='t-row'><span>Benford</span><span>" + ben[i].toFixed(1) + "%</span></div>" +
+                "<div class='t-note'>Gap " + (obs[i] - ben[i]).toFixed(1) + " points</div>";
+    pair.forEach(b => {
+      const h = Math.max(2, (b.v / ymax) * ph);
+      svg += '<rect x="' + b.x + '" y="' + (mt + ph - h) + '" width="' + bw + '" height="' + h +
+             '" rx="2" fill="' + b.c + '" tabindex="0" role="img" data-tip="' + tip +
+             '" aria-label="Leading digit ' + dg + ', ' + b.n + ' ' + b.v.toFixed(1) + ' percent"/>' +
+             '<text class="axis-label" x="' + (b.x + bw / 2) + '" y="' + (mt + ph - h - 6) +
+             '" text-anchor="middle" style="font-size:10px">' + b.v.toFixed(1) + '</text>';
+    });
+    svg += '<text class="axis-label" x="' + (gx + gw / 2) + '" y="' + (mt + ph + 18) +
+           '" text-anchor="middle">' + dg + '</text>';
+  });
+  svg += '<text class="axis-label" x="' + (ml + pw / 2) + '" y="' + (H - 8) +
+         '" text-anchor="middle">Leading digit of the revenue value</text>';
+
+  const mount = q('#q-benford');
+  mount.innerHTML = '<svg class="chart" viewBox="0 0 ' + W + ' ' + H + '" ' +
+    'preserveAspectRatio="xMidYMid meet" role="img" aria-label="Grouped bar chart comparing the ' +
+    'observed share of each leading digit with the share Benford law predicts. Digits 1 to 4 are ' +
+    'far over-represented and digits 5 to 9 are almost absent.">' + svg + '</svg>';
+  mount.querySelectorAll('[data-tip]').forEach(node =>
+    LDD.hoverable(node, () => node.getAttribute('data-tip')));
+
+  LDD.dataTable(q('#q-benford-table'),
+    [{ label: 'Leading digit' }, { label: 'Observed', num: true },
+     { label: 'Benford law', num: true }, { label: 'Gap (points)', num: true }],
+    digits.map((dg, i) => [String(dg), obs[i].toFixed(1) + '%', ben[i].toFixed(1) + '%',
+                           (obs[i] - ben[i]).toFixed(1)]));
+
+  /* --------------------------------------------------- 6. power analysis */
+  LDD.dataTable(q('#q-power'),
+    [{ label: 'Lift to detect on one city' }, { label: 'Rows needed', num: true },
+     { label: 'Versus this file', num: true }],
+    [['50%',  '1,000',  '1x'],
+     ['30%',  '3,000',  '3x'],
+     ['20%',  '6,000',  '6x'],
+     ['10%', '25,000', '25x']]);
+
+  /* --------------------------------------------------------- 7. blocked */
+  const ul = q('#q-blocked');
+  ul.innerHTML = '';
+  blocked.forEach(b => {
+    const i = b.indexOf(':');
+    const head = i < 0 ? b : b.slice(0, i);
+    const rest = i < 0 ? ''  : b.slice(i + 1).trim();
+    const li = LDD.el('li', '',
+      '<span style="color:var(--text-primary);font-weight:600">' + head + '</span>' +
+      (rest ? ' &mdash; ' + rest : ''));
+    li.style.marginBottom = '9px';
+    ul.appendChild(li);
+  });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PMARIS Reliability Explorer</title>
+<link rel="stylesheet" href="styles.css?v=4.4">
+</head>
+<body>
+<header class="topbar"><div class="topbar-inner">
+  <div class="brand">PMARIS <span>Asset Reliability</span></div>
+  <nav class="pages">
+    <a href="index.html">Overview</a>
+    <a href="dashboard.html">Explorer</a>
+    <a href="levers.html">Levers</a>
+    <a href="sites.html">Sites &amp; Equipment</a>
+    <a href="watchlist.html">Risk Watchlist</a>
+    <a href="quality.html">Data &amp; Method</a>
+  </nav>
+  <div class="spacer"></div>
+  <span class="live"><span class="dot"></span><span class="live-text">connecting…</span></span>
+  <button class="theme-btn" type="button">Dark</button>
+</div></header>
+
+<div class="filterbar"><div class="wrap" style="padding-bottom:0"><div class="filterbar-inner" id="slicers"></div></div></div>
+
+<main class="wrap">
+  <section class="page-head">
+    <div class="eyebrow">Explorer · cross-filtered</div>
+    <h1>Slice any combination and every visual follows</h1>
+    <p class="insight" id="lede">Click a slicer, a bar, a column or a heatmap cell to filter the whole page.</p>
+  </section>
+
+  <div class="notice js-stale" hidden><span class="ico">⚠</span><span class="js-stale-text"></span></div>
+  <div class="notice"><span class="ico">ℹ</span><span>Every figure here is recomputed in the browser from the
+    <span class="js-rows">5,000</span>-row live feed. Small filtered groups are noisy: the significance tests on
+    the Levers and Data &amp; Method pages were run on the full file, not on your current selection.</span></div>
+
+  <div class="filter-summary" id="fsum"></div>
+  <div class="kpi-row" id="kpis"></div>
+
+  <div class="grid two">
+    <section class="panel">
+      <h2>Mean revenue loss by month</h2>
+      <p class="note">EGP per observation. Click a month to filter.</p>
+      <div id="months"></div>
+    </section>
+    <section class="panel">
+      <h2>Share of revenue loss by maintenance strategy</h2>
+      <p class="note">Click a slice to filter.</p>
+      <div id="donut"></div>
+    </section>
+  </div>
+
+  <section class="panel" style="margin-top:var(--gap)">
+    <h2>Mean unplanned downtime: strategy × spare-parts status</h2>
+    <p class="note">Hours per observation, one hue light to dark. The worst cell is the combination to fix first. Click a cell to filter both.</p>
+    <div id="heat"></div>
+  </section>
+
+  <div class="grid two">
+    <section class="panel">
+      <h2>Mean revenue loss by site</h2>
+      <p class="note">EGP per observation. Click to filter.</p>
+      <div id="site"></div>
+    </section>
+    <section class="panel">
+      <h2>Mean revenue loss by failure mode</h2>
+      <p class="note">EGP per observation. Three rare modes are pooled into “Other” (27 rows).</p>
+      <div id="fmode"></div>
+    </section>
+  </div>
+  <div class="grid two">
+    <section class="panel">
+      <h2>Mean unplanned downtime by technician skill</h2>
+      <p class="note">Hours per observation. Click to filter.</p>
+      <div id="skill"></div>
+    </section>
+    <section class="panel">
+      <h2>Mean revenue loss by criticality class</h2>
+      <p class="note">EGP per observation. Click to filter.</p>
+      <div id="crit"></div>
+    </section>
+  </div>
+
+  <footer class="foot">Cross-filter engine: <code>app.js</code>, dimension-keyed per Playbook §14.6. Feed: index-encoded rows under <code>raw</code> in <code>live_data.json</code>.</footer>
+</main>
+
+<script src="app.js?v=4.4"></script>
+<script>
+const L = LDD, { fmt, el, mount, tipHtml } = L;
+let filters = null;
+const SLICE = ['Site', 'Maintenance_Strategy', 'Spare_Parts_Status', 'Criticality_Class', 'Technician_Skill_Level', 'Environment_Severity'];
+const spColor = { Shortage: 'var(--critical)', Limited: 'var(--warning)', Available: 'var(--good)' };
+
+function toggle(set, v) { if (set.has(v)) set.delete(v); else set.add(v); render(L.data); }
+
+function render(d) {
+  const raw = d.raw;
+  if (!filters) filters = L.newFilters(raw);
+  const thr = d.high_risk_threshold;
+
+  // slicers, one per chosen dimension plus month
+  const sl = mount('slicers'); sl.innerHTML = '';
+  SLICE.forEach(dim => {
+    const m = el('div'); sl.appendChild(m);
+    L.slicer(m, { label: fmt.label(dim), values: raw.lookups[dim], selected: filters[dim], onChange: () => render(L.data),
+                  colorFn: dim === 'Maintenance_Strategy' ? L.strategyColor : (dim === 'Spare_Parts_Status' ? v => spColor[v] : null) });
+  });
+
+  const rows = L.filterRows(raw, filters);
+  const s = L.summarize(raw, rows, thr);
+  const all = d.kpis;
+
+  const fs = mount('fsum');
+  const active = Object.entries(filters).filter(([, v]) => v.size).map(([k, v]) => `${fmt.label(k)}: ${[...v].map(x => k === 'month' ? fmt.month(x) : x).join(', ')}`);
+  fs.innerHTML = `<span><span class="count">${fmt.int(s.n)}</span> of ${fmt.int(d.row_count)} observations</span>`
+    + (active.length ? `<span>· ${active.join(' · ')}</span>` : '<span>· no filters</span>');
+  if (active.length) {
+    const b = el('button', 'reset', 'Reset all'); b.type = 'button';
+    b.addEventListener('click', () => { Object.values(filters).forEach(x => x.clear()); render(L.data); });
+    fs.appendChild(b);
+  }
+  mount('lede').innerHTML = s.n
+    ? `This selection averages <b>${fmt.egpc(s.loss_mean)}</b> of revenue loss and <b>${fmt.hrs(s.downtime_mean)}</b> of unplanned downtime per observation, against <b>${fmt.egpc(all.loss_mean)}</b> and <b>${fmt.hrs(all.downtime_mean)}</b> across the whole file. <b>${fmt.pct(s.high_risk_pct)}</b> of it is high-risk.`
+    : 'No observations match this combination. Reset a slicer.';
+
+  const delta = (a, b) => { if (!b) return ''; const p = (a / b - 1) * 100; return Math.abs(p) < 0.5 ? 'same as whole file' : (p > 0 ? '+' : '−') + Math.abs(p).toFixed(0) + '% vs whole file'; };
+  const k = mount('kpis'); k.innerHTML = '';
+  [['Observations', fmt.int(s.n), fmt.pct(100 * s.n / d.row_count) + ' of file'],
+   ['Mean revenue loss', fmt.egpc(s.loss_mean), delta(s.loss_mean, all.loss_mean)],
+   ['Mean downtime', fmt.hrs(s.downtime_mean), delta(s.downtime_mean, all.downtime_mean)],
+   ['High-risk share', fmt.pct(s.high_risk_pct), `${fmt.int(s.high_risk_n)} obs · ${fmt.pct(s.high_risk_loss_share)} of loss`],
+   ['Escalation gap', fmt.int(s.gap), 'high-risk, only P3/P4']].forEach(([a, b, c], i) =>
+    k.appendChild(el('div', 'kpi is-compact' + (i === 4 && s.gap ? ' is-alert' : ''), `<div class="label">${a}</div><div class="value">${b}</div><div class="sub">${c}</div>`)));
+
+  // month columns (filtered on everything except month, so the selection stays visible)
+  const mrows = L.groupMonth(raw, L.filterRows(raw, filters, 'month'), thr);
+  L.columns(mount('months'), mrows.map(m => ({ name: m.name, label: fmt.month(m.name).slice(0, 3), value: m.loss_mean,
+    selected: filters.month.has(m.name), color: 'var(--seq-500)',
+    tip: tipHtml(fmt.month(m.name), [['Mean loss', fmt.egpc(m.loss_mean)], ['Mean downtime', fmt.hrs(m.downtime_mean)], ['Observations', fmt.int(m.n)]]) })),
+    { onClick: v => toggle(filters.month, v), mean: s.loss_mean });
+
+  const strat = L.groupDim(raw, L.filterRows(raw, filters, 'Maintenance_Strategy'), 'Maintenance_Strategy', thr);
+  L.donut(mount('donut'), strat.map(x => ({ name: x.name, value: x.loss_total, color: L.strategyColor(x.name) })),
+    { centreLabel: 'EGP revenue loss', measure: 'Revenue loss', fmt: fmt.compact, onClick: v => toggle(filters.Maintenance_Strategy, v) });
+
+  // heatmap strategy x spares
+  const base = L.filterRows(raw, filters, '__none__');
+  const M = L.measureIndex(raw);
+  const si = raw.dimensions.indexOf('Maintenance_Strategy'), pi = raw.dimensions.indexOf('Spare_Parts_Status');
+  const rN = raw.lookups.Maintenance_Strategy, cN = raw.lookups.Spare_Parts_Status;
+  const sum = rN.map(() => cN.map(() => 0)), cnt = rN.map(() => cN.map(() => 0));
+  base.forEach(r => { sum[r[1 + si]][r[1 + pi]] += r[M.downtime]; cnt[r[1 + si]][r[1 + pi]]++; });
+  L.heatmap(mount('heat'), rN, cN, sum.map((row, i) => row.map((v, j) => cnt[i][j] ? v / cnt[i][j] : null)),
+    { fmt: v => v.toFixed(1) + ' h', measure: 'Mean downtime', counts: cnt,
+      onClick: (r, c) => { filters.Maintenance_Strategy.clear(); filters.Maintenance_Strategy.add(r);
+                           filters.Spare_Parts_Status.clear(); filters.Spare_Parts_Status.add(c); render(L.data); } });
+
+  const bars = (id, dim, key, f, opts) => {
+    const g = L.groupDim(raw, L.filterRows(raw, filters, dim), dim, thr).filter(x => x.n);
+    if (!opts || !opts.keepOrder) g.sort((a, b) => b[key] - a[key]);
+    const max = Math.max(...g.map(x => x[key]));
+    L.barList(mount(id), g.map(x => ({ label: x.name, value: x[key], valueText: f(x[key]), selected: filters[dim].has(x.name),
+      color: (filters[dim].size && !filters[dim].has(x.name)) ? 'var(--gridline)' : L.seqFor(x[key], max),
+      tip: tipHtml(x.name, [['Mean loss', fmt.egpc(x.loss_mean)], ['Mean downtime', fmt.hrs(x.downtime_mean)],
+                            ['High-risk share', fmt.pct(x.high_risk_pct)], ['Observations', fmt.int(x.n)]]),
+      onClick: () => toggle(filters[dim], x.name) })), { wide: true });
+  };
+  bars('site', 'Site', 'loss_mean', fmt.egpc);
+  bars('fmode', 'Failure_Mode_Group', 'loss_mean', fmt.egpc);
+  bars('skill', 'Technician_Skill_Level', 'downtime_mean', fmt.hrs, { keepOrder: true });
+  bars('crit', 'Criticality_Class', 'loss_mean', fmt.egpc, { keepOrder: true });
+}
+LDD.start(render);
+</script>
+</body>
+</html>

@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PMARIS Controllable Levers</title>
+<link rel="stylesheet" href="styles.css?v=4.4">
+</head>
+<body>
+<header class="topbar"><div class="topbar-inner">
+  <div class="brand">PMARIS <span>Asset Reliability</span></div>
+  <nav class="pages">
+    <a href="index.html">Overview</a>
+    <a href="dashboard.html">Explorer</a>
+    <a href="levers.html">Levers</a>
+    <a href="sites.html">Sites &amp; Equipment</a>
+    <a href="watchlist.html">Risk Watchlist</a>
+    <a href="quality.html">Data &amp; Method</a>
+  </nav>
+  <div class="spacer"></div>
+  <span class="live"><span class="dot"></span><span class="live-text">connecting…</span></span>
+  <button class="theme-btn" type="button">Dark</button>
+</div></header>
+
+<main class="wrap">
+  <section class="page-head">
+    <div class="eyebrow">Levers · what management can move</div>
+    <h1>Four levers separate the low-downtime windows from the high ones</h1>
+    <p class="insight">Strategy, spare-parts availability, crew skill and PM discipline each split downtime by roughly
+      <b>2x to 3x</b>, and every one of those splits survives a Bonferroni-corrected test. Reactive runs
+      <b class="js-reactive-vs-predictive">2.3x</b> predictive, shortage <b class="js-shortage-vs-available">2.9x</b> available,
+      basic crews <b class="js-basic-vs-expert">1.8x</b> expert.</p>
+  </section>
+
+  <div class="notice js-stale" hidden><span class="ico">⚠</span><span class="js-stale-text"></span></div>
+  <div class="notice"><span class="ico">ℹ</span><span><strong>Association, not proof of cause.</strong> Reactive windows
+    also start in worse health, so part of the gap is which assets end up reactive. The intervals below are
+    <span class="study-tag">study constant</span> bootstrap results on the full file; the bars and curves are live.</span></div>
+
+  <div class="grid two">
+    <section class="panel">
+      <h2>Downtime by maintenance strategy, with 95% intervals <span class="study-tag">study</span></h2>
+      <p class="note">Mean unplanned hours per observation. Non-overlapping intervals mean the ranking is reproducible. Preventive, condition-based and predictive overlap: the step that matters is leaving reactive.</p>
+      <div id="bs-strategy"></div>
+    </section>
+    <section class="panel">
+      <h2>Downtime by spare-parts status, with 95% intervals <span class="study-tag">study</span></h2>
+      <p class="note">All three intervals are clear of each other: each step up in availability is a real reduction.</p>
+      <div id="bs-spares"></div>
+    </section>
+  </div>
+
+  <div class="grid two">
+    <section class="panel">
+      <h2>Downtime by technician skill, with 95% intervals <span class="study-tag">study</span></h2>
+      <p class="note">Basic and intermediate crews sit clearly above advanced and expert.</p>
+      <div id="bs-skill"></div>
+    </section>
+    <section class="panel">
+      <h2>Downtime falls as PM compliance rises</h2>
+      <p class="note">Mean downtime per observation, by PM-compliance decile (D1 = least compliant). Live.</p>
+      <div id="pm"></div>
+    </section>
+  </div>
+
+  <section class="panel" style="margin-top:var(--gap)">
+    <h2>Lever thresholds: below versus above <span class="study-tag">study</span></h2>
+    <p class="note">Each lever split at a practical operating threshold. p-values from one-way ANOVA; η² is the share of downtime variance the split explains.</p>
+    <div id="lever-table"></div>
+  </section>
+
+  <section class="panel" style="margin-top:var(--gap)">
+    <h2>Revenue loss climbs steeply as health falls</h2>
+    <p class="note">Mean revenue loss per observation by Asset Health Index band. Live. Windows under 70 lose about 9x the 90+ band.</p>
+    <div id="health"></div>
+  </section>
+
+  <div class="through-line"><b>So what.</b> Moving reactive windows onto any planned strategy, clearing spare-part
+    shortages and lifting PM compliance above 80% each target a measured 2x gap. Those are budget lines, not
+    hopes, and they apply at every site.</div>
+  <footer class="foot">Intervals: 2,000 bootstrap resamples. Tests: <code>02_Analysis/analyze_pmaris.py</code>, register in <code>findings.json</code>.</footer>
+</main>
+
+<script src="app.js?v=4.4"></script>
+<script>
+const L = LDD, { fmt, mount, tipHtml } = L;
+const spColor = { Shortage: 'var(--critical)', Limited: 'var(--warning)', Available: 'var(--good)' };
+function bs(d, key, order, colorFn) {
+  const b = d.study && d.study.bootstrap[key];
+  if (!b) return [];
+  return order.filter(k => b[k]).map(k => ({ name: k, mean: b[k].mean, lo: b[k].lo, hi: b[k].hi, n: b[k].n, color: colorFn(k) }));
+}
+function render(d) {
+  const f = v => v.toFixed(1) + ' h';
+  L.dotWhisker(mount('bs-strategy'), bs(d, 'Maintenance_Strategy|Unplanned_Downtime_Hours_30D', L.STRATEGY_ORDER, L.strategyColor), { fmt: f, zero: true });
+  L.dotWhisker(mount('bs-spares'), bs(d, 'Spare_Parts_Status|Unplanned_Downtime_Hours_30D', ['Shortage', 'Limited', 'Available'], k => spColor[k]), { fmt: f, zero: true });
+  L.dotWhisker(mount('bs-skill'), bs(d, 'Technician_Skill_Level|Unplanned_Downtime_Hours_30D', ['Basic', 'Intermediate', 'Advanced', 'Expert'], () => 'var(--seq-500)'), { fmt: f, zero: true });
+
+  L.columns(mount('pm'), d.lever_pm_deciles.map(x => ({ name: x.name, label: x.name, value: x.downtime_mean, color: 'var(--seq-500)',
+    tip: tipHtml(x.name + ' · median PM ' + x.pm_median.toFixed(0) + '%', [['Mean downtime', fmt.hrs(x.downtime_mean)], ['Mean loss', fmt.egpc(x.loss_mean)], ['Observations', fmt.int(x.n)]]) })),
+    { fmt: v => v.toFixed(0) + ' h', mean: d.kpis.downtime_mean });
+
+  const lv = d.study ? d.study.levers : {};
+  const names = { pm_compliance: 'PM compliance', days_since_maint: 'Days since last maintenance', lubricant: 'Lubricant quality index', backlog: 'Maintenance backlog' };
+  const rows = Object.entries(lv).map(([k, v]) => {
+    const keys = Object.keys(v).filter(x => typeof v[x] === 'object');
+    const [a, b] = keys;
+    const better = v[a].downtime_mean < v[b].downtime_mean ? a : b, worse = better === a ? b : a;
+    return [names[k] || k, worse, fmt.hrs(v[worse].downtime_mean), better, fmt.hrs(v[better].downtime_mean),
+            (v[worse].downtime_mean / v[better].downtime_mean).toFixed(1) + 'x',
+            v.p_downtime < 1e-6 ? v.p_downtime.toExponential(1) : v.p_downtime.toFixed(4), v.eta2.toFixed(3)];
+  });
+  L.dataTable(mount('lever-table'), [{ label: 'Lever' }, { label: 'Worse side' }, { label: 'Downtime', num: 1 }, { label: 'Better side' },
+    { label: 'Downtime', num: 1 }, { label: 'Ratio', num: 1 }, { label: 'p', num: 1 }, { label: 'η²', num: 1 }], rows);
+
+  const hb = d.lever_health_bands;
+  const mx = Math.max(...hb.map(x => x.loss_mean));
+  L.barList(mount('health'), hb.map(x => ({ label: 'Health ' + x.name, value: x.loss_mean, valueText: fmt.egpc(x.loss_mean), color: L.seqFor(x.loss_mean, mx),
+    tip: tipHtml('Health ' + x.name, [['Mean loss', fmt.egpc(x.loss_mean)], ['Mean downtime', fmt.hrs(x.downtime_mean)], ['Failure probability', fmt.pct(x.fp_mean)], ['Observations', fmt.int(x.n)]]) })), { wide: true });
+}
+LDD.start(render);
+</script>
+</body>
+</html>

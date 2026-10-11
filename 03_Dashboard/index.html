@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PMARIS Reliability Overview</title>
+<link rel="stylesheet" href="styles.css?v=4.4">
+</head>
+<body>
+<header class="topbar"><div class="topbar-inner">
+  <div class="brand">PMARIS <span>Asset Reliability</span></div>
+  <nav class="pages">
+    <a href="index.html">Overview</a>
+    <a href="dashboard.html">Explorer</a>
+    <a href="levers.html">Levers</a>
+    <a href="sites.html">Sites &amp; Equipment</a>
+    <a href="watchlist.html">Risk Watchlist</a>
+    <a href="quality.html">Data &amp; Method</a>
+  </nav>
+  <div class="spacer"></div>
+  <span class="live"><span class="dot"></span><span class="live-text">connecting…</span></span>
+  <button class="theme-btn" type="button">Dark</button>
+</div></header>
+
+<main class="wrap">
+  <section class="page-head">
+    <div class="eyebrow">Overview · for the Head of Reliability &amp; Maintenance</div>
+    <h1>The next EGP belongs on the controllable levers and on the escalation list</h1>
+    <p class="insight">One in five observations (<b class="js-hr-pct">19.2%</b>) is high-risk, and that slice carries
+      <b class="js-hr-loss-share">46.7%</b> of all revenue loss. Yet <b class="js-gap">829</b> of the
+      <b class="js-hr-n">960</b> high-risk observations are flagged only P3 or P4. Reactive maintenance runs
+      <b class="js-reactive-vs-predictive">2.3x</b> the downtime of predictive, and spare-part shortages
+      <b class="js-shortage-vs-available">2.9x</b> the downtime of available stock.</p>
+  </section>
+
+  <div class="notice js-stale" hidden><span class="ico">⚠</span><span class="js-stale-text"></span></div>
+  <div class="notice"><span class="ico">ℹ</span><span><strong>How to read this.</strong> Each row is one
+    30-day observation window, not a unique asset: <code>Asset_ID</code> is not a stable key in this export
+    (see Data &amp; Method). Lever differences are associations from observational data, tested for significance,
+    not proven causes.</span></div>
+
+  <div class="kpi-row" id="kpis"></div>
+
+  <div class="grid two">
+    <section class="panel">
+      <h2>Unplanned downtime by maintenance strategy</h2>
+      <p class="note">Mean hours per 30-day observation. Reactive sits at <b class="js-reactive-vs-predictive">2.3x</b> predictive; tested, large effect on failure probability.</p>
+      <div id="strategy"></div>
+    </section>
+    <section class="panel">
+      <h2>Unplanned downtime by spare-parts status</h2>
+      <p class="note">Mean hours per observation. Shortage runs <b class="js-shortage-vs-available">2.9x</b> available stock.</p>
+      <div id="spares"></div>
+    </section>
+  </div>
+
+  <div class="grid two">
+    <section class="panel">
+      <h2>Mean revenue loss per observation, by month</h2>
+      <p class="note">EGP per 30-day window, <span class="js-dates"></span>. The year is flat: no trend to schedule against.</p>
+      <div id="trend"></div>
+    </section>
+    <section class="panel">
+      <h2>Where executive priority flags actually land</h2>
+      <p class="note">Observations by Executive Intervention Priority. Only <b class="js-escalated">134</b> are P1 or P2.</p>
+      <div id="priority"></div>
+    </section>
+  </div>
+
+  <div class="through-line"><b>Through-line.</b> Loss is concentrated, not spread: the top 10% of observations carry
+    <b class="js-top10">44.7%</b> of revenue loss. The concentration lines up with things management controls
+    (strategy, spares, crew skill, PM discipline), not with where an asset happens to sit. Fund the levers, and
+    widen the escalation list so it catches the high-risk windows it currently misses.</div>
+
+  <footer class="foot">Source: <code>01_Data/Group_9230_Team1_PMARIS_Enterprise_Dataset.csv</code>, <span class="js-rows">5,000</span>
+    observations. Live: polls <code>live_data.json</code> every second; <code>watcher.py</code> rewrites it within ~0.3 s of
+    any save. Tests and intervals: <code>02_Analysis/analyze_pmaris.py</code>.</footer>
+</main>
+
+<script src="app.js?v=4.4"></script>
+<script>
+const { fmt, el, mount, barList, columns, line, tipHtml, strategyColor, PRIORITY_COLOR, sparkline } = LDD;
+
+function render(d) {
+  const k = d.kpis;
+  const lossSpark = d.trend.map(t => t.loss_mean), dtSpark = d.trend.map(t => t.downtime_mean),
+        hrSpark = d.trend.map(t => t.high_risk_pct);
+  const tiles = [
+    ['Mean revenue loss / obs', fmt.egpc(k.loss_mean), `total ${fmt.egpc(k.loss_total)}`, sparkline(lossSpark)],
+    ['Mean unplanned downtime', fmt.hrs(k.downtime_mean), `per 30-day window · ${fmt.int(k.downtime_total)} h total`, sparkline(dtSpark)],
+    ['High-risk observations', fmt.pct(k.high_risk_pct), `${fmt.int(k.high_risk_n)} with failure probability ≥ ${d.high_risk_threshold}%`, sparkline(hrSpark)],
+    ['Loss carried by high-risk', fmt.pct(k.high_risk_loss_share), `${fmt.pct(k.high_risk_downtime_share)} of downtime too`, ''],
+    ['Escalation gap', fmt.int(k.escalation_gap), `high-risk but only P3/P4 · ${fmt.egpc(k.escalation_gap_exposure)} exposure`, '', true],
+  ];
+  const box = mount('kpis'); box.innerHTML = '';
+  tiles.forEach(([label, value, sub, spark, alert]) => {
+    box.appendChild(el('div', 'kpi' + (alert ? ' is-alert' : ''),
+      `<div class="label">${label}</div><div class="value">${value}</div><div class="sub">${sub}</div>${spark}`));
+  });
+
+  const strat = d.by_dimension.Maintenance_Strategy;
+  barList(mount('strategy'), strat.map(s => ({
+    label: s.name, value: s.downtime_mean, valueText: fmt.hrs(s.downtime_mean), color: strategyColor(s.name),
+    tip: tipHtml(s.name, [['Mean downtime', fmt.hrs(s.downtime_mean)], ['Mean revenue loss', fmt.egpc(s.loss_mean)],
+                          ['High-risk share', fmt.pct(s.high_risk_pct)], ['Observations', fmt.int(s.n)]]) })));
+
+  const sp = d.by_dimension.Spare_Parts_Status;
+  const spColor = { Shortage: 'var(--critical)', Limited: 'var(--warning)', Available: 'var(--good)' };
+  barList(mount('spares'), sp.map(s => ({
+    label: s.name, value: s.downtime_mean, valueText: fmt.hrs(s.downtime_mean), color: spColor[s.name],
+    tip: tipHtml(s.name, [['Mean downtime', fmt.hrs(s.downtime_mean)], ['Mean revenue loss', fmt.egpc(s.loss_mean)],
+                          ['High-risk share', fmt.pct(s.high_risk_pct)], ['Observations', fmt.int(s.n)]]) })));
+
+  line(mount('trend'), d.trend.map(t => ({ name: t.period, label: fmt.month(t.period), value: t.loss_mean,
+    tip: tipHtml(fmt.month(t.period), [['Mean revenue loss', fmt.egpc(t.loss_mean)], ['Mean downtime', fmt.hrs(t.downtime_mean)],
+                                         ['Observations', fmt.int(t.n)]]) })), { fmt: fmt.compact, name: 'Mean loss', zero: true });
+
+  barList(mount('priority'), d.priority.map(p => ({
+    label: p.name, value: p.n, valueText: fmt.int(p.n), color: PRIORITY_COLOR[p.name],
+    tip: tipHtml(p.name, [['Observations', fmt.int(p.n)], ['Share', fmt.pct(100 * p.n / d.row_count)]]) })), { wide: true });
+}
+LDD.start(render);
+</script>
+</body>
+</html>

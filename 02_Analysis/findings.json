@@ -1,0 +1,2649 @@
+{
+ "stage0": {
+  "rows": 5000,
+  "cols": 60,
+  "numeric": 41,
+  "categorical": 16,
+  "date_min": "2025-09-01",
+  "date_max": "2026-08-31",
+  "distinct_dates": 365,
+  "months": {
+   "2025-09": 441,
+   "2025-10": 421,
+   "2025-11": 396,
+   "2025-12": 443,
+   "2026-01": 425,
+   "2026-02": 357,
+   "2026-03": 428,
+   "2026-04": 386,
+   "2026-05": 433,
+   "2026-06": 420,
+   "2026-07": 424,
+   "2026-08": 426
+  },
+  "asset_ids": 500,
+  "path": "A"
+ },
+ "stage1": {
+  "missing": 0,
+  "dups": 0,
+  "dup_ids": 0,
+  "type_errors": 0,
+  "bad_dates": 0,
+  "rare_levels": {
+   "Failure_Mode_Category": {
+    "Control / Sensor": 16,
+    "Pressure / Hydraulic": 8,
+    "Overheating": 3
+   },
+   "Sensor_Health_Status": {
+    "Degraded": 48
+   },
+   "Inspection_Status": {
+    "Fail": 36
+   },
+   "Executive_Intervention_Priority": {
+    "P1 - Immediate": 2
+   }
+  },
+  "bounded": {
+   "Utilization_Rate_Pct": {
+    "max": 99.0,
+    "at_max_pct": 5.6,
+    "min": 22.18,
+    "at_min_pct": 0.0
+   },
+   "Failure_Count_12M": {
+    "max": 10.0,
+    "at_max_pct": 0.0,
+    "min": 0.0,
+    "at_min_pct": 34.5
+   },
+   "Preventive_Maintenance_Compliance_Pct": {
+    "max": 100.0,
+    "at_max_pct": 15.8,
+    "min": 20.66,
+    "at_min_pct": 0.0
+   },
+   "Unplanned_Downtime_Hours_30D": {
+    "max": 120.0,
+    "at_max_pct": 0.1,
+    "min": 0.0,
+    "at_min_pct": 9.2
+   },
+   "Spare_Parts_Cost_EGP_30D": {
+    "max": 18215.2,
+    "at_max_pct": 0.0,
+    "min": 0.0,
+    "at_min_pct": 17.2
+   },
+   "Inspection_Defect_Count": {
+    "max": 8.0,
+    "at_max_pct": 0.0,
+    "min": 0.0,
+    "at_min_pct": 25.1
+   },
+   "Production_Loss_Units": {
+    "max": 15116.0,
+    "at_max_pct": 0.0,
+    "min": 0.0,
+    "at_min_pct": 13.1
+   },
+   "Revenue_Loss_EGP_30D": {
+    "max": 6000000.0,
+    "at_max_pct": 0.0,
+    "min": 0.0,
+    "at_min_pct": 13.1
+   },
+   "Safety_Incident_Count_12M": {
+    "max": 4.0,
+    "at_max_pct": 0.1,
+    "min": 0.0,
+    "at_min_pct": 72.9
+   },
+   "Maintenance_Cost_Efficiency_Index": {
+    "max": 100.0,
+    "at_max_pct": 53.2,
+    "min": 0.0,
+    "at_min_pct": 0.7
+   }
+  },
+  "outliers_3sd": {
+   "Unplanned_Downtime_Hours_30D": 102,
+   "Revenue_Loss_EGP_30D": 113,
+   "Failure_Probability_Pct": 0,
+   "Asset_Health_Index": 14,
+   "Maintenance_Cost_EGP_30D": 96,
+   "Financial_Exposure_At_Risk_EGP": 112
+  },
+  "load_over_100": 452,
+  "asset_inconsistent": {
+   "Site": 499,
+   "Asset_Type": 498,
+   "Criticality_Class": 498,
+   "Manufacturer_Group": 498,
+   "Maintenance_Strategy": 499
+  },
+  "age_backwards": 497,
+  "derived": {
+   "Financial_Exposure_vs_Revenue_Loss": 0.999,
+   "Failure_Probability_vs_Health_Index": -0.972,
+   "Operating_Hours_vs_Utilization": 0.918
+  },
+  "priority_bands": {
+   "P1 - Immediate": [
+    79.2,
+    80.0,
+    2
+   ],
+   "P2 - High": [
+    60.0,
+    74.0,
+    132
+   ],
+   "P3 - Planned": [
+    40.0,
+    59.9,
+    1526
+   ],
+   "P4 - Monitor": [
+    9.5,
+    40.0,
+    3340
+   ]
+  }
+ },
+ "kpis": {
+  "observations": 5000,
+  "revenue_loss_total": 1878589027.61,
+  "revenue_loss_mean": 375717.805522,
+  "downtime_total": 54938.33,
+  "downtime_mean": 10.987666,
+  "high_risk_n": 960,
+  "high_risk_pct": 19.2,
+  "health_mean": 84.569512,
+  "maint_cost_total": 126446824.99,
+  "spare_cost_total": 16912572.12,
+  "exposure_total": 2219559524.28,
+  "pm_compliance_mean": 80.806648,
+  "mtbf_mean": 1274.09208,
+  "mttr_mean": 5.670248,
+  "emergency_wo_pct": 30.66,
+  "safety_incidents": 1662.0,
+  "priority_counts": {
+   "P4 - Monitor": 3340,
+   "P3 - Planned": 1526,
+   "P2 - High": 132,
+   "P1 - Immediate": 2
+  }
+ },
+ "concentration": {
+  "revenue_loss_top10_share": 0.4473510591665539,
+  "revenue_loss_top20_share": 0.6475918853245645,
+  "downtime_top10_share": 0.39695291065454663,
+  "gini_revenue_loss": 0.6308706753143931,
+  "gini_downtime": 0.5831206909638498,
+  "zero_loss_obs": 656,
+  "lorenz_desc": [
+   [
+    5.0,
+    29.1
+   ],
+   [
+    10.0,
+    44.7
+   ],
+   [
+    15.0,
+    56.0
+   ],
+   [
+    20.0,
+    64.8
+   ],
+   [
+    25.0,
+    71.7
+   ],
+   [
+    30.0,
+    77.4
+   ],
+   [
+    35.0,
+    82.1
+   ],
+   [
+    40.0,
+    85.9
+   ],
+   [
+    45.0,
+    89.1
+   ],
+   [
+    50.0,
+    91.7
+   ],
+   [
+    55.0,
+    93.9
+   ],
+   [
+    60.0,
+    95.8
+   ],
+   [
+    65.0,
+    97.2
+   ],
+   [
+    70.0,
+    98.4
+   ],
+   [
+    75.0,
+    99.2
+   ],
+   [
+    80.0,
+    99.7
+   ],
+   [
+    85.0,
+    100.0
+   ],
+   [
+    90.0,
+    100.0
+   ],
+   [
+    95.0,
+    100.0
+   ],
+   [
+    100.0,
+    100.0
+   ]
+  ],
+  "high_risk_share_of_loss": 0.4667822782110091,
+  "high_risk_share_of_downtime": 0.45045326277664427
+ },
+ "profiles": {
+  "Site": [
+   {
+    "name": "Cement Plant A",
+    "n": 1009,
+    "downtime_mean": 12.08577799801784,
+    "loss_mean": 433531.2833201189,
+    "loss_total": 437433064.87,
+    "fp_mean": 33.93957383548067,
+    "health_mean": 82.93898909811695,
+    "cost_mean": 27107.344172447967,
+    "high_risk_pct": 22.69573835480674,
+    "emergency_pct": 34.58870168483647
+   },
+   {
+    "name": "Cement Plant B",
+    "n": 830,
+    "downtime_mean": 12.66878313253012,
+    "loss_mean": 422621.2649277108,
+    "loss_total": 350775649.89,
+    "fp_mean": 34.25533734939759,
+    "health_mean": 82.6627469879518,
+    "cost_mean": 27881.851578313253,
+    "high_risk_pct": 24.337349397590362,
+    "emergency_pct": 35.54216867469879
+   },
+   {
+    "name": "Drilling Site East",
+    "n": 877,
+    "downtime_mean": 11.869361459521095,
+    "loss_mean": 404890.05395667045,
+    "loss_total": 355088577.32,
+    "fp_mean": 33.56108323831243,
+    "health_mean": 83.14955530216648,
+    "cost_mean": 26487.87155074116,
+    "high_risk_pct": 24.629418472063854,
+    "emergency_pct": 34.09350057012543
+   },
+   {
+    "name": "Drilling Site West",
+    "n": 721,
+    "downtime_mean": 11.819750346740637,
+    "loss_mean": 402631.41431345354,
+    "loss_total": 290297249.72,
+    "fp_mean": 31.927836338418864,
+    "health_mean": 83.77343966712898,
+    "cost_mean": 26838.51420249653,
+    "high_risk_pct": 20.804438280166437,
+    "emergency_pct": 33.287101248266296
+   },
+   {
+    "name": "Lab Equipment Facility",
+    "n": 807,
+    "downtime_mean": 8.60280049566295,
+    "loss_mean": 291510.0158859975,
+    "loss_total": 235248582.82,
+    "fp_mean": 24.141920693928128,
+    "health_mean": 87.42909541511771,
+    "cost_mean": 21289.89266418835,
+    "high_risk_pct": 11.400247831474598,
+    "emergency_pct": 24.039653035935565
+   },
+   {
+    "name": "Diagnostics Service Center",
+    "n": 756,
+    "downtime_mean": 8.405767195767195,
+    "loss_mean": 277441.67062169313,
+    "loss_total": 209745902.99,
+    "fp_mean": 22.66420634920635,
+    "health_mean": 88.19305555555556,
+    "cost_mean": 21418.257195767197,
+    "high_risk_pct": 9.39153439153439,
+    "emergency_pct": 20.634920634920636
+   }
+  ],
+  "Industry_Context": [
+   {
+    "name": "Cement Manufacturing",
+    "n": 1839,
+    "downtime_mean": 12.348907014681892,
+    "loss_mean": 428607.2402175095,
+    "loss_total": 788208714.76,
+    "fp_mean": 34.082088091353995,
+    "health_mean": 82.81431212615551,
+    "cost_mean": 27456.904339314846,
+    "high_risk_pct": 23.436650353452965,
+    "emergency_pct": 35.01903208265362
+   },
+   {
+    "name": "Oil & Gas Drilling",
+    "n": 1598,
+    "downtime_mean": 11.8469774718398,
+    "loss_mean": 403870.9806257822,
+    "loss_total": 645385827.04,
+    "fp_mean": 32.8241802252816,
+    "health_mean": 83.4310450563204,
+    "cost_mean": 26646.077653316646,
+    "high_risk_pct": 22.90362953692115,
+    "emergency_pct": 33.729662077597
+   },
+   {
+    "name": "Laboratory Equipment Manufacturing",
+    "n": 807,
+    "downtime_mean": 8.60280049566295,
+    "loss_mean": 291510.0158859975,
+    "loss_total": 235248582.82,
+    "fp_mean": 24.141920693928128,
+    "health_mean": 87.42909541511771,
+    "cost_mean": 21289.89266418835,
+    "high_risk_pct": 11.400247831474598,
+    "emergency_pct": 24.039653035935565
+   },
+   {
+    "name": "In-Vitro Diagnostics / Medical",
+    "n": 756,
+    "downtime_mean": 8.405767195767195,
+    "loss_mean": 277441.67062169313,
+    "loss_total": 209745902.99,
+    "fp_mean": 22.66420634920635,
+    "health_mean": 88.19305555555556,
+    "cost_mean": 21418.257195767197,
+    "high_risk_pct": 9.39153439153439,
+    "emergency_pct": 20.634920634920636
+   }
+  ],
+  "Asset_Class": [
+   {
+    "name": "Material Handling",
+    "n": 226,
+    "downtime_mean": 13.570530973451326,
+    "loss_mean": 501519.40053097345,
+    "loss_total": 113343384.52,
+    "fp_mean": 36.67566371681416,
+    "health_mean": 81.56725663716814,
+    "cost_mean": 29291.58203539823,
+    "high_risk_pct": 30.088495575221238,
+    "emergency_pct": 42.0353982300885
+   },
+   {
+    "name": "Separation Equipment",
+    "n": 243,
+    "downtime_mean": 12.62028806584362,
+    "loss_mean": 428156.7692592593,
+    "loss_total": 104042094.93,
+    "fp_mean": 34.867654320987654,
+    "health_mean": 82.6033744855967,
+    "cost_mean": 27593.370617283952,
+    "high_risk_pct": 26.337448559670783,
+    "emergency_pct": 39.91769547325103
+   },
+   {
+    "name": "Power Equipment",
+    "n": 358,
+    "downtime_mean": 11.860670391061452,
+    "loss_mean": 421308.08882681566,
+    "loss_total": 150828295.8,
+    "fp_mean": 30.788715083798884,
+    "health_mean": 84.4763966480447,
+    "cost_mean": 26765.473016759777,
+    "high_risk_pct": 19.83240223463687,
+    "emergency_pct": 30.726256983240223
+   },
+   {
+    "name": "Drilling Equipment",
+    "n": 458,
+    "downtime_mean": 12.805851528384279,
+    "loss_mean": 416262.6360043668,
+    "loss_total": 190648287.29,
+    "fp_mean": 33.0207423580786,
+    "health_mean": 83.23868995633188,
+    "cost_mean": 27783.59170305677,
+    "high_risk_pct": 22.707423580786028,
+    "emergency_pct": 35.37117903930131
+   },
+   {
+    "name": "Rotating Heavy Equipment",
+    "n": 926,
+    "downtime_mean": 11.848380129589632,
+    "loss_mean": 406808.7360691145,
+    "loss_total": 376704889.6,
+    "fp_mean": 34.15350971922246,
+    "health_mean": 82.77089632829373,
+    "cost_mean": 26648.173369330452,
+    "high_risk_pct": 22.4622030237581,
+    "emergency_pct": 34.341252699784015
+   },
+   {
+    "name": "Rotating Equipment",
+    "n": 1705,
+    "downtime_mean": 10.806862170087976,
+    "loss_mean": 371563.2706392962,
+    "loss_total": 633515376.44,
+    "fp_mean": 30.357536656891497,
+    "health_mean": 84.54045161290323,
+    "cost_mean": 25222.55890909091,
+    "high_risk_pct": 19.41348973607038,
+    "emergency_pct": 29.912023460410555
+   },
+   {
+    "name": "Manufacturing Equipment",
+    "n": 350,
+    "downtime_mean": 8.919828571428571,
+    "loss_mean": 302139.92557142855,
+    "loss_total": 105748973.95,
+    "fp_mean": 24.802857142857142,
+    "health_mean": 87.11365714285714,
+    "cost_mean": 21485.7976,
+    "high_risk_pct": 11.428571428571429,
+    "emergency_pct": 23.428571428571427
+   },
+   {
+    "name": "Utility Equipment",
+    "n": 369,
+    "downtime_mean": 8.644878048780487,
+    "loss_mean": 290493.6679674797,
+    "loss_total": 107192163.48,
+    "fp_mean": 23.410542005420055,
+    "health_mean": 87.99485094850948,
+    "cost_mean": 21934.688780487806,
+    "high_risk_pct": 10.840108401084011,
+    "emergency_pct": 21.680216802168022
+   },
+   {
+    "name": "Diagnostic Equipment",
+    "n": 255,
+    "downtime_mean": 8.790470588235294,
+    "loss_mean": 284730.74317647057,
+    "loss_total": 72606339.51,
+    "fp_mean": 22.55921568627451,
+    "health_mean": 88.2198431372549,
+    "cost_mean": 21435.971294117648,
+    "high_risk_pct": 9.019607843137255,
+    "emergency_pct": 23.529411764705884
+   },
+   {
+    "name": "Testing Equipment",
+    "n": 110,
+    "downtime_mean": 6.751727272727273,
+    "loss_mean": 217811.1099090909,
+    "loss_total": 23959222.09,
+    "fp_mean": 21.649363636363635,
+    "health_mean": 88.46918181818182,
+    "cost_mean": 18673.09609090909,
+    "high_risk_pct": 10.0,
+    "emergency_pct": 17.272727272727273
+   }
+  ],
+  "Criticality_Class": [
+   {
+    "name": "Critical",
+    "n": 880,
+    "downtime_mean": 11.862602272727273,
+    "loss_mean": 596541.000590909,
+    "loss_total": 524956080.52,
+    "fp_mean": 33.75740909090909,
+    "health_mean": 83.43863636363636,
+    "cost_mean": 26635.3395,
+    "high_risk_pct": 23.295454545454547,
+    "emergency_pct": 33.97727272727273
+   },
+   {
+    "name": "High",
+    "n": 1789,
+    "downtime_mean": 11.098507546115147,
+    "loss_mean": 428598.36211291223,
+    "loss_total": 766762469.82,
+    "fp_mean": 31.017780883174957,
+    "health_mean": 84.43459474566797,
+    "cost_mean": 25509.52040804919,
+    "high_risk_pct": 19.8993851313583,
+    "emergency_pct": 30.911123532699833
+   },
+   {
+    "name": "Medium",
+    "n": 1724,
+    "downtime_mean": 10.941142691415314,
+    "loss_mean": 292687.08945475635,
+    "loss_total": 504592542.21999997,
+    "fp_mean": 29.075034802784224,
+    "health_mean": 84.98721577726218,
+    "cost_mean": 25140.153097447797,
+    "high_risk_pct": 17.575406032482597,
+    "emergency_pct": 30.104408352668212
+   },
+   {
+    "name": "Low",
+    "n": 607,
+    "downtime_mean": 9.524678747940692,
+    "loss_mean": 135548.49266886327,
+    "loss_total": 82277935.05,
+    "fp_mean": 27.057627677100495,
+    "health_mean": 85.42028006589786,
+    "cost_mean": 23112.96586490939,
+    "high_risk_pct": 15.815485996705107,
+    "emergency_pct": 26.68863261943987
+   }
+  ],
+  "Maintenance_Strategy": [
+   {
+    "name": "Reactive",
+    "n": 906,
+    "downtime_mean": 19.035518763796908,
+    "loss_mean": 623765.5652980133,
+    "loss_total": 565131602.16,
+    "fp_mean": 50.50037527593819,
+    "health_mean": 76.05903973509933,
+    "cost_mean": 34738.47922737307,
+    "high_risk_pct": 50.88300220750552,
+    "emergency_pct": 55.849889624724064
+   },
+   {
+    "name": "Preventive",
+    "n": 2051,
+    "downtime_mean": 9.519785470502194,
+    "loss_mean": 334029.8914870795,
+    "loss_total": 685095307.44,
+    "fp_mean": 26.764539249146758,
+    "health_mean": 86.10900536323744,
+    "cost_mean": 23701.332842515847,
+    "high_risk_pct": 13.164310092637738,
+    "emergency_pct": 25.646026328620184
+   },
+   {
+    "name": "Condition-Based",
+    "n": 901,
+    "downtime_mean": 9.47480577136515,
+    "loss_mean": 329039.31753607106,
+    "loss_total": 296464425.1,
+    "fp_mean": 26.007147613762488,
+    "health_mean": 86.42173140954495,
+    "cost_mean": 23400.5556381798,
+    "high_risk_pct": 11.875693673695894,
+    "emergency_pct": 26.41509433962264
+   },
+   {
+    "name": "Predictive",
+    "n": 1142,
+    "downtime_mean": 8.432810858143608,
+    "loss_mean": 290628.4526357268,
+    "loss_total": 331897692.91,
+    "fp_mean": 24.226637478108582,
+    "health_mean": 87.09502626970227,
+    "cost_mean": 22135.226374781087,
+    "high_risk_pct": 10.683012259194395,
+    "emergency_pct": 23.029772329246935
+   }
+  ],
+  "Spare_Parts_Status": [
+   {
+    "name": "Shortage",
+    "n": 426,
+    "downtime_mean": 20.768286384976527,
+    "loss_mean": 704409.3042253521,
+    "loss_total": 300078363.6,
+    "fp_mean": 48.91833333333334,
+    "health_mean": 74.96330985915493,
+    "cost_mean": 39129.86812206573,
+    "high_risk_pct": 50.0,
+    "emergency_pct": 57.04225352112676
+   },
+   {
+    "name": "Limited",
+    "n": 2196,
+    "downtime_mean": 13.243274134790529,
+    "loss_mean": 449759.92456284154,
+    "loss_total": 987672794.34,
+    "fp_mean": 35.01665755919854,
+    "health_mean": 82.06463570127505,
+    "cost_mean": 28380.86440801457,
+    "high_risk_pct": 24.408014571949,
+    "emergency_pct": 37.52276867030965
+   },
+   {
+    "name": "Available",
+    "n": 2378,
+    "downtime_mean": 7.152569386038688,
+    "loss_mean": 248459.99565601346,
+    "loss_total": 590837869.67,
+    "fp_mean": 22.71273338940286,
+    "health_mean": 88.60355340622371,
+    "cost_mean": 19955.055899915897,
+    "high_risk_pct": 8.87300252312868,
+    "emergency_pct": 19.596299411269975
+   }
+  ],
+  "Technician_Skill_Level": [
+   {
+    "name": "Basic",
+    "n": 586,
+    "downtime_mean": 14.778293515358362,
+    "loss_mean": 507872.5181399317,
+    "loss_total": 297613295.63,
+    "fp_mean": 36.66943686006826,
+    "health_mean": 82.21503412969284,
+    "cost_mean": 30723.0728668942,
+    "high_risk_pct": 27.474402730375427,
+    "emergency_pct": 40.61433447098976
+   },
+   {
+    "name": "Intermediate",
+    "n": 1923,
+    "downtime_mean": 12.417602704108164,
+    "loss_mean": 418631.69716588664,
+    "loss_total": 805028753.65,
+    "fp_mean": 32.59902236089444,
+    "health_mean": 83.63027561102444,
+    "cost_mean": 27369.609750390016,
+    "high_risk_pct": 22.724908996359854,
+    "emergency_pct": 35.881435257410295
+   },
+   {
+    "name": "Advanced",
+    "n": 1789,
+    "downtime_mean": 9.378982671883733,
+    "loss_mean": 320679.408764673,
+    "loss_total": 573695462.28,
+    "fp_mean": 27.348010061486864,
+    "health_mean": 85.73528228060368,
+    "cost_mean": 22916.170581330352,
+    "high_risk_pct": 14.75684740078256,
+    "emergency_pct": 25.880380100614868
+   },
+   {
+    "name": "Expert",
+    "n": 702,
+    "downtime_mean": 8.005982905982906,
+    "loss_mean": 288107.57272079773,
+    "loss_total": 202251516.05,
+    "fp_mean": 26.559643874643875,
+    "health_mean": 86.13690883190883,
+    "cost_mean": 21103.013632478633,
+    "high_risk_pct": 13.96011396011396,
+    "emergency_pct": 20.22792022792023
+   }
+  ],
+  "Operating_Shift": [
+   {
+    "name": "Night",
+    "n": 1211,
+    "downtime_mean": 11.400900082576383,
+    "loss_mean": 414547.1234847234,
+    "loss_total": 502016566.54,
+    "fp_mean": 30.26364161849711,
+    "health_mean": 84.61370767960364,
+    "cost_mean": 25799.892444260942,
+    "high_risk_pct": 19.570602807597027,
+    "emergency_pct": 31.791907514450866
+   },
+   {
+    "name": "Evening",
+    "n": 1410,
+    "downtime_mean": 10.896737588652483,
+    "loss_mean": 371415.18667375884,
+    "loss_total": 523695413.21,
+    "fp_mean": 30.532468085106384,
+    "health_mean": 84.46958156028369,
+    "cost_mean": 25157.0585035461,
+    "high_risk_pct": 20.354609929078013,
+    "emergency_pct": 30.21276595744681
+   },
+   {
+    "name": "Day",
+    "n": 2379,
+    "downtime_mean": 10.831206389239176,
+    "loss_mean": 358502.332013451,
+    "loss_total": 852877047.86,
+    "fp_mean": 30.28441361916772,
+    "health_mean": 84.6062421185372,
+    "cost_mean": 25107.903635981504,
+    "high_risk_pct": 18.327028163093736,
+    "emergency_pct": 30.348886086591005
+   }
+  ],
+  "Environment_Severity": [
+   {
+    "name": "Severe",
+    "n": 1043,
+    "downtime_mean": 13.547372962607861,
+    "loss_mean": 470739.4295110259,
+    "loss_total": 490981224.98,
+    "fp_mean": 37.52458293384468,
+    "health_mean": 81.14149568552253,
+    "cost_mean": 29390.290354745925,
+    "high_risk_pct": 27.612655800575265,
+    "emergency_pct": 40.172579098753594
+   },
+   {
+    "name": "Harsh",
+    "n": 1871,
+    "downtime_mean": 11.699267771245323,
+    "loss_mean": 398461.98151790485,
+    "loss_total": 745522367.42,
+    "fp_mean": 32.948781400320684,
+    "health_mean": 83.34609299839659,
+    "cost_mean": 26402.231293425975,
+    "high_risk_pct": 22.073757349011224,
+    "emergency_pct": 32.870122928915016
+   },
+   {
+    "name": "Moderate",
+    "n": 1384,
+    "downtime_mean": 9.861119942196531,
+    "loss_mean": 337563.9876589595,
+    "loss_total": 467188558.92,
+    "fp_mean": 26.58918352601156,
+    "health_mean": 86.3640534682081,
+    "cost_mean": 23419.666893063582,
+    "high_risk_pct": 15.028901734104046,
+    "emergency_pct": 26.372832369942195
+   },
+   {
+    "name": "Controlled",
+    "n": 702,
+    "downtime_mean": 7.508974358974359,
+    "loss_mean": 249140.8494159544,
+    "loss_total": 174896876.29,
+    "fp_mean": 20.17368945868946,
+    "health_mean": 89.38545584045583,
+    "cost_mean": 19916.464985754985,
+    "high_risk_pct": 7.264957264957265,
+    "emergency_pct": 19.08831908831909
+   }
+  ],
+  "Manufacturer_Group": [
+   {
+    "name": "OEM-A",
+    "n": 1128,
+    "downtime_mean": 11.472898936170212,
+    "loss_mean": 389921.8309219858,
+    "loss_total": 439831825.28,
+    "fp_mean": 30.791241134751772,
+    "health_mean": 84.36808510638298,
+    "cost_mean": 25834.43314716312,
+    "high_risk_pct": 20.0354609929078,
+    "emergency_pct": 32.358156028368796
+   },
+   {
+    "name": "OEM-C",
+    "n": 849,
+    "downtime_mean": 11.150070671378092,
+    "loss_mean": 386809.73195524147,
+    "loss_total": 328401462.43,
+    "fp_mean": 30.243886925795053,
+    "health_mean": 84.50108362779741,
+    "cost_mean": 25679.824440518256,
+    "high_risk_pct": 17.6678445229682,
+    "emergency_pct": 31.684334511189636
+   },
+   {
+    "name": "OEM-E",
+    "n": 739,
+    "downtime_mean": 11.087753721244926,
+    "loss_mean": 380372.7461299053,
+    "loss_total": 281095459.39,
+    "fp_mean": 30.88208389715832,
+    "health_mean": 84.34640054127199,
+    "cost_mean": 25267.093261163736,
+    "high_risk_pct": 20.56833558863329,
+    "emergency_pct": 31.25845737483085
+   },
+   {
+    "name": "OEM-B",
+    "n": 987,
+    "downtime_mean": 10.967629179331308,
+    "loss_mean": 367231.6530901722,
+    "loss_total": 362457641.6,
+    "fp_mean": 30.126990881458966,
+    "health_mean": 84.74494427558257,
+    "cost_mean": 25410.643424518745,
+    "high_risk_pct": 19.250253292806484,
+    "emergency_pct": 30.49645390070922
+   },
+   {
+    "name": "OEM-D",
+    "n": 792,
+    "downtime_mean": 10.304583333333333,
+    "loss_mean": 365219.82133838383,
+    "loss_total": 289254098.5,
+    "fp_mean": 29.98526515151515,
+    "health_mean": 84.73050505050504,
+    "cost_mean": 24328.31702020202,
+    "high_risk_pct": 18.434343434343436,
+    "emergency_pct": 28.03030303030303
+   },
+   {
+    "name": "Legacy/Other",
+    "n": 505,
+    "downtime_mean": 10.594772277227722,
+    "loss_mean": 351581.26813861384,
+    "loss_total": 177548540.41,
+    "fp_mean": 29.765465346534654,
+    "health_mean": 84.86560396039604,
+    "cost_mean": 24718.216613861387,
+    "high_risk_pct": 19.00990099009901,
+    "emergency_pct": 28.712871287128714
+   }
+  ],
+  "Failure_Mode_Group": [
+   {
+    "name": "Bearing / Vibration",
+    "n": 1320,
+    "downtime_mean": 17.74789393939394,
+    "loss_mean": 628064.9526818182,
+    "loss_total": 829045737.54,
+    "fp_mean": 50.11329545454546,
+    "health_mean": 76.07715151515151,
+    "cost_mean": 35349.84423484848,
+    "high_risk_pct": 47.196969696969695,
+    "emergency_pct": 51.74242424242424
+   },
+   {
+    "name": "Other (sensor / hydraulic / heat)",
+    "n": 27,
+    "downtime_mean": 17.27925925925926,
+    "loss_mean": 588001.6648148148,
+    "loss_total": 15876044.95,
+    "fp_mean": 37.95148148148148,
+    "health_mean": 81.91259259259259,
+    "cost_mean": 33566.85259259259,
+    "high_risk_pct": 22.22222222222222,
+    "emergency_pct": 48.148148148148145
+   },
+   {
+    "name": "Lubrication",
+    "n": 784,
+    "downtime_mean": 13.340382653061225,
+    "loss_mean": 425065.06339285715,
+    "loss_total": 333251009.7,
+    "fp_mean": 35.98184948979592,
+    "health_mean": 82.69948979591837,
+    "cost_mean": 28378.14781887755,
+    "high_risk_pct": 24.107142857142858,
+    "emergency_pct": 39.15816326530612
+   },
+   {
+    "name": "General Mechanical",
+    "n": 2869,
+    "downtime_mean": 7.175221331474381,
+    "loss_mean": 244132.5323875915,
+    "loss_total": 700416235.42,
+    "fp_mean": 19.645402579295922,
+    "health_mean": 89.01278494248868,
+    "cost_mean": 19738.67469153015,
+    "high_risk_pct": 4.949459742070408,
+    "emergency_pct": 18.473335657023352
+   }
+  ]
+ },
+ "trend": [
+  {
+   "period": "2025-09",
+   "n": 441,
+   "downtime_mean": 10.61498866213152,
+   "loss_mean": 368474.8226984127,
+   "loss_total": 162497396.81,
+   "fp_mean": 29.913673469387756,
+   "health_mean": 84.81115646258503
+  },
+  {
+   "period": "2025-10",
+   "n": 421,
+   "downtime_mean": 10.607814726840855,
+   "loss_mean": 366948.3039904988,
+   "loss_total": 154485235.98,
+   "fp_mean": 29.991353919239906,
+   "health_mean": 84.87030878859858
+  },
+  {
+   "period": "2025-11",
+   "n": 396,
+   "downtime_mean": 10.820580808080807,
+   "loss_mean": 373164.08691919193,
+   "loss_total": 147772978.42,
+   "fp_mean": 30.070429292929294,
+   "health_mean": 84.73936868686869
+  },
+  {
+   "period": "2025-12",
+   "n": 443,
+   "downtime_mean": 11.223995485327313,
+   "loss_mean": 356718.0655530474,
+   "loss_total": 158026103.04,
+   "fp_mean": 30.82212189616253,
+   "health_mean": 84.37410835214448
+  },
+  {
+   "period": "2026-01",
+   "n": 425,
+   "downtime_mean": 10.508282352941176,
+   "loss_mean": 367768.7260470588,
+   "loss_total": 156301708.57,
+   "fp_mean": 31.174658823529413,
+   "health_mean": 84.27816470588235
+  },
+  {
+   "period": "2026-02",
+   "n": 357,
+   "downtime_mean": 11.214257703081232,
+   "loss_mean": 392933.7687114846,
+   "loss_total": 140277355.43,
+   "fp_mean": 29.823557422969188,
+   "health_mean": 84.81910364145658
+  },
+  {
+   "period": "2026-03",
+   "n": 428,
+   "downtime_mean": 10.157009345794393,
+   "loss_mean": 350292.63371495326,
+   "loss_total": 149925247.23,
+   "fp_mean": 29.46177570093458,
+   "health_mean": 84.89140186915888
+  },
+  {
+   "period": "2026-04",
+   "n": 386,
+   "downtime_mean": 11.404922279792746,
+   "loss_mean": 395298.0248704663,
+   "loss_total": 152585037.6,
+   "fp_mean": 30.355958549222798,
+   "health_mean": 84.45699481865284
+  },
+  {
+   "period": "2026-05",
+   "n": 433,
+   "downtime_mean": 11.128360277136258,
+   "loss_mean": 371593.06554272515,
+   "loss_total": 160899797.38,
+   "fp_mean": 29.81958429561201,
+   "health_mean": 84.58041570438799
+  },
+  {
+   "period": "2026-06",
+   "n": 420,
+   "downtime_mean": 10.917404761904763,
+   "loss_mean": 396176.22535714286,
+   "loss_total": 166394014.65,
+   "fp_mean": 30.530333333333335,
+   "health_mean": 84.678
+  },
+  {
+   "period": "2026-07",
+   "n": 424,
+   "downtime_mean": 11.500448113207547,
+   "loss_mean": 402546.375495283,
+   "loss_total": 170679663.21,
+   "fp_mean": 31.05004716981132,
+   "health_mean": 84.12257075471697
+  },
+  {
+   "period": "2026-08",
+   "n": 426,
+   "downtime_mean": 11.819154929577465,
+   "loss_mean": 372639.6462206573,
+   "loss_total": 158744489.29,
+   "fp_mean": 31.08725352112676,
+   "health_mean": 84.25424882629108
+  }
+ ],
+ "trend_stats": {
+  "slope_loss_per_month": 2243.36514956463,
+  "slope_pct_of_mean": 0.5963021666066022,
+  "lag1": -0.1650728657204326
+ },
+ "drivers": {
+  "Revenue_Loss_EGP_30D": [
+   [
+    "Financial_Exposure_At_Risk_EGP",
+    0.999
+   ],
+   [
+    "Production_Loss_Units",
+    0.944
+   ],
+   [
+    "Unplanned_Downtime_Hours_30D",
+    0.851
+   ],
+   [
+    "Maintenance_Cost_EGP_30D",
+    0.829
+   ],
+   [
+    "Failure_Count_12M",
+    0.809
+   ],
+   [
+    "Labor_Hours_30D",
+    0.806
+   ],
+   [
+    "Maintenance_Cost_Efficiency_Index",
+    -0.721
+   ],
+   [
+    "Mean_Time_To_Repair_Hours",
+    0.678
+   ],
+   [
+    "Reliability_Risk_Score",
+    0.635
+   ],
+   [
+    "Downtime_Risk_Score",
+    0.61
+   ],
+   [
+    "Quality_Defect_Rate_Pct",
+    0.607
+   ],
+   [
+    "Maintenance_Priority_Index",
+    0.603
+   ],
+   [
+    "Failure_Probability_Pct",
+    0.56
+   ],
+   [
+    "Preventive_Maintenance_Effectiveness_Index",
+    -0.556
+   ],
+   [
+    "Replacement_Priority_Score",
+    0.553
+   ],
+   [
+    "Mean_Time_Between_Failures_Hours",
+    -0.544
+   ],
+   [
+    "Asset_Health_Index",
+    -0.538
+   ],
+   [
+    "Spare_Parts_Cost_EGP_30D",
+    0.418
+   ],
+   [
+    "Remaining_Useful_Life_Months",
+    -0.375
+   ],
+   [
+    "Vibration_mm_s",
+    0.336
+   ],
+   [
+    "Operational_Criticality_Score",
+    0.305
+   ],
+   [
+    "Preventive_Maintenance_Compliance_Pct",
+    -0.301
+   ],
+   [
+    "Load_Factor_Pct",
+    0.279
+   ],
+   [
+    "Maintenance_Backlog_Days",
+    0.275
+   ],
+   [
+    "Lubricant_Quality_Index",
+    -0.263
+   ],
+   [
+    "Utilization_Rate_Pct",
+    0.236
+   ],
+   [
+    "Energy_Consumption_kWh",
+    0.224
+   ],
+   [
+    "Days_Since_Last_Maintenance",
+    0.221
+   ],
+   [
+    "Alarm_Count_30D",
+    0.216
+   ],
+   [
+    "Operating_Hours_30D",
+    0.212
+   ],
+   [
+    "Asset_Age_Years",
+    0.207
+   ],
+   [
+    "Replacement_Cost_EGP",
+    0.207
+   ],
+   [
+    "Temperature_C",
+    0.2
+   ],
+   [
+    "Spare_Parts_Lead_Time_Days",
+    0.196
+   ],
+   [
+    "Planned_Downtime_Hours_30D",
+    -0.186
+   ],
+   [
+    "Sensor_Anomaly_Count_30D",
+    0.162
+   ],
+   [
+    "Safety_Incident_Count_12M",
+    0.151
+   ],
+   [
+    "Pressure_Bar",
+    0.123
+   ],
+   [
+    "Inspection_Defect_Count",
+    0.071
+   ],
+   [
+    "Starts_Stops_30D",
+    -0.031
+   ]
+  ],
+  "Failure_Probability_Pct": [
+   [
+    "Reliability_Risk_Score",
+    0.985
+   ],
+   [
+    "Asset_Health_Index",
+    -0.972
+   ],
+   [
+    "Downtime_Risk_Score",
+    0.97
+   ],
+   [
+    "Replacement_Priority_Score",
+    0.832
+   ],
+   [
+    "Maintenance_Priority_Index",
+    0.751
+   ],
+   [
+    "Preventive_Maintenance_Effectiveness_Index",
+    -0.737
+   ],
+   [
+    "Remaining_Useful_Life_Months",
+    -0.72
+   ],
+   [
+    "Vibration_mm_s",
+    0.669
+   ],
+   [
+    "Mean_Time_Between_Failures_Hours",
+    -0.622
+   ],
+   [
+    "Failure_Count_12M",
+    0.618
+   ],
+   [
+    "Unplanned_Downtime_Hours_30D",
+    0.604
+   ],
+   [
+    "Production_Loss_Units",
+    0.586
+   ],
+   [
+    "Preventive_Maintenance_Compliance_Pct",
+    -0.579
+   ],
+   [
+    "Maintenance_Cost_EGP_30D",
+    0.575
+   ],
+   [
+    "Financial_Exposure_At_Risk_EGP",
+    0.575
+   ],
+   [
+    "Maintenance_Cost_Efficiency_Index",
+    -0.573
+   ],
+   [
+    "Lubricant_Quality_Index",
+    -0.571
+   ],
+   [
+    "Revenue_Loss_EGP_30D",
+    0.56
+   ],
+   [
+    "Mean_Time_To_Repair_Hours",
+    0.555
+   ],
+   [
+    "Quality_Defect_Rate_Pct",
+    0.546
+   ],
+   [
+    "Labor_Hours_30D",
+    0.518
+   ],
+   [
+    "Asset_Age_Years",
+    0.482
+   ],
+   [
+    "Days_Since_Last_Maintenance",
+    0.476
+   ],
+   [
+    "Alarm_Count_30D",
+    0.444
+   ],
+   [
+    "Load_Factor_Pct",
+    0.412
+   ],
+   [
+    "Maintenance_Backlog_Days",
+    0.409
+   ],
+   [
+    "Spare_Parts_Cost_EGP_30D",
+    0.387
+   ],
+   [
+    "Energy_Consumption_kWh",
+    0.387
+   ],
+   [
+    "Planned_Downtime_Hours_30D",
+    -0.374
+   ],
+   [
+    "Temperature_C",
+    0.369
+   ],
+   [
+    "Utilization_Rate_Pct",
+    0.35
+   ],
+   [
+    "Sensor_Anomaly_Count_30D",
+    0.32
+   ],
+   [
+    "Operating_Hours_30D",
+    0.315
+   ],
+   [
+    "Spare_Parts_Lead_Time_Days",
+    0.291
+   ],
+   [
+    "Safety_Incident_Count_12M",
+    0.287
+   ],
+   [
+    "Pressure_Bar",
+    0.192
+   ],
+   [
+    "Operational_Criticality_Score",
+    0.181
+   ],
+   [
+    "Inspection_Defect_Count",
+    0.17
+   ],
+   [
+    "Starts_Stops_30D",
+    -0.085
+   ],
+   [
+    "Replacement_Cost_EGP",
+    0.08
+   ]
+  ],
+  "Unplanned_Downtime_Hours_30D": [
+   [
+    "Maintenance_Cost_EGP_30D",
+    0.972
+   ],
+   [
+    "Failure_Count_12M",
+    0.947
+   ],
+   [
+    "Labor_Hours_30D",
+    0.94
+   ],
+   [
+    "Maintenance_Cost_Efficiency_Index",
+    -0.929
+   ],
+   [
+    "Production_Loss_Units",
+    0.897
+   ],
+   [
+    "Financial_Exposure_At_Risk_EGP",
+    0.858
+   ],
+   [
+    "Revenue_Loss_EGP_30D",
+    0.851
+   ],
+   [
+    "Mean_Time_To_Repair_Hours",
+    0.789
+   ],
+   [
+    "Quality_Defect_Rate_Pct",
+    0.717
+   ],
+   [
+    "Reliability_Risk_Score",
+    0.702
+   ],
+   [
+    "Downtime_Risk_Score",
+    0.672
+   ],
+   [
+    "Preventive_Maintenance_Effectiveness_Index",
+    -0.667
+   ],
+   [
+    "Mean_Time_Between_Failures_Hours",
+    -0.636
+   ],
+   [
+    "Failure_Probability_Pct",
+    0.604
+   ],
+   [
+    "Asset_Health_Index",
+    -0.594
+   ],
+   [
+    "Maintenance_Priority_Index",
+    0.531
+   ],
+   [
+    "Replacement_Priority_Score",
+    0.49
+   ],
+   [
+    "Spare_Parts_Cost_EGP_30D",
+    0.48
+   ],
+   [
+    "Remaining_Useful_Life_Months",
+    -0.423
+   ],
+   [
+    "Preventive_Maintenance_Compliance_Pct",
+    -0.376
+   ],
+   [
+    "Vibration_mm_s",
+    0.354
+   ],
+   [
+    "Lubricant_Quality_Index",
+    -0.333
+   ],
+   [
+    "Maintenance_Backlog_Days",
+    0.332
+   ],
+   [
+    "Days_Since_Last_Maintenance",
+    0.29
+   ],
+   [
+    "Asset_Age_Years",
+    0.252
+   ],
+   [
+    "Planned_Downtime_Hours_30D",
+    -0.244
+   ],
+   [
+    "Alarm_Count_30D",
+    0.242
+   ],
+   [
+    "Spare_Parts_Lead_Time_Days",
+    0.235
+   ],
+   [
+    "Load_Factor_Pct",
+    0.207
+   ],
+   [
+    "Temperature_C",
+    0.201
+   ],
+   [
+    "Energy_Consumption_kWh",
+    0.189
+   ],
+   [
+    "Sensor_Anomaly_Count_30D",
+    0.184
+   ],
+   [
+    "Utilization_Rate_Pct",
+    0.175
+   ],
+   [
+    "Safety_Incident_Count_12M",
+    0.165
+   ],
+   [
+    "Operating_Hours_30D",
+    0.155
+   ],
+   [
+    "Operational_Criticality_Score",
+    0.086
+   ],
+   [
+    "Inspection_Defect_Count",
+    0.086
+   ],
+   [
+    "Pressure_Bar",
+    0.083
+   ],
+   [
+    "Replacement_Cost_EGP",
+    0.042
+   ],
+   [
+    "Starts_Stops_30D",
+    -0.039
+   ]
+  ]
+ },
+ "register": [
+  {
+   "dimension": "Site",
+   "measure": "Unplanned_Downtime_Hours_30D",
+   "F": 15.22178596692724,
+   "df": [
+    5,
+    4994
+   ],
+   "p_anova": 7.116521424991713e-15,
+   "H": 104.6925445281413,
+   "p_kruskal": 5.4122718306352665e-21,
+   "eta2": 0.01501130072113037,
+   "verdict": "REAL, small",
+   "highest": "Cement Plant B",
+   "lowest": "Diagnostics Service Center",
+   "hi_mean": 12.66878313253012,
+   "lo_mean": 8.405767195767195
+  },
+  {
+   "dimension": "Site",
+   "measure": "Revenue_Loss_EGP_30D",
+   "F": 13.298481887644659,
+   "df": [
+    5,
+    4994
+   ],
+   "p_anova": 6.710504927814631e-13,
+   "H": 98.48280364296079,
+   "p_kruskal": 1.1034468806467869e-19,
+   "eta2": 0.01313951371890404,
+   "verdict": "REAL, small",
+   "highest": "Cement Plant A",
+   "lowest": "Diagnostics Service Center",
+   "hi_mean": 433531.2833201189,
+   "lo_mean": 277441.67062169313
+  },
+  {
+   "dimension": "Site",
+   "measure": "Failure_Probability_Pct",
+   "F": 49.80912914682975,
+   "df": [
+    5,
+    4994
+   ],
+   "p_anova": 1.6547526191601621e-50,
+   "H": 283.30935331831097,
+   "p_kruskal": 3.8721876570979396e-59,
+   "eta2": 0.04750018644922106,
+   "verdict": "REAL, small",
+   "highest": "Cement Plant B",
+   "lowest": "Diagnostics Service Center",
+   "hi_mean": 34.25533734939759,
+   "lo_mean": 22.66420634920635
+  },
+  {
+   "dimension": "Industry_Context",
+   "measure": "Unplanned_Downtime_Hours_30D",
+   "F": 25.100615108291667,
+   "df": [
+    3,
+    4996
+   ],
+   "p_anova": 4.104220679839068e-16,
+   "H": 102.79897340980096,
+   "p_kruskal": 3.8867420007150834e-22,
+   "eta2": 0.014848622231842532,
+   "verdict": "REAL, small",
+   "highest": "Cement Manufacturing",
+   "lowest": "In-Vitro Diagnostics / Medical",
+   "hi_mean": 12.348907014681892,
+   "lo_mean": 8.405767195767195
+  },
+  {
+   "dimension": "Industry_Context",
+   "measure": "Revenue_Loss_EGP_30D",
+   "F": 22.108203736264855,
+   "df": [
+    3,
+    4996
+   ],
+   "p_anova": 3.228024300323342e-14,
+   "H": 97.52565431908079,
+   "p_kruskal": 5.2900444263980215e-21,
+   "eta2": 0.013101611671037707,
+   "verdict": "REAL, small",
+   "highest": "Cement Manufacturing",
+   "lowest": "In-Vitro Diagnostics / Medical",
+   "hi_mean": 428607.2402175095,
+   "lo_mean": 277441.67062169313
+  },
+  {
+   "dimension": "Industry_Context",
+   "measure": "Failure_Probability_Pct",
+   "F": 82.19380391096868,
+   "df": [
+    3,
+    4996
+   ],
+   "p_anova": 6.671684073914379e-52,
+   "H": 281.1364477427269,
+   "p_kruskal": 1.2020742740426334e-60,
+   "eta2": 0.047034350516914514,
+   "verdict": "REAL, small",
+   "highest": "Cement Manufacturing",
+   "lowest": "In-Vitro Diagnostics / Medical",
+   "hi_mean": 34.082088091353995,
+   "lo_mean": 22.66420634920635
+  },
+  {
+   "dimension": "Asset_Class",
+   "measure": "Unplanned_Downtime_Hours_30D",
+   "F": 6.687327053540299,
+   "df": [
+    9,
+    4990
+   ],
+   "p_anova": 1.4216675087440526e-09,
+   "H": 86.21276169052726,
+   "p_kruskal": 9.337817130895197e-15,
+   "eta2": 0.01191756979949284,
+   "verdict": "REAL, small",
+   "highest": "Material Handling",
+   "lowest": "Testing Equipment",
+   "hi_mean": 13.570530973451326,
+   "lo_mean": 6.751727272727273
+  },
+  {
+   "dimension": "Asset_Class",
+   "measure": "Revenue_Loss_EGP_30D",
+   "F": 6.081864860085972,
+   "df": [
+    9,
+    4990
+   ],
+   "p_anova": 1.5319821955317656e-08,
+   "H": 79.54500862285022,
+   "p_kruskal": 1.9899045163169668e-13,
+   "eta2": 0.010850275462773564,
+   "verdict": "REAL, small",
+   "highest": "Material Handling",
+   "lowest": "Testing Equipment",
+   "hi_mean": 501519.40053097345,
+   "lo_mean": 217811.1099090909
+  },
+  {
+   "dimension": "Asset_Class",
+   "measure": "Failure_Probability_Pct",
+   "F": 20.20080740890105,
+   "df": [
+    9,
+    4990
+   ],
+   "p_anova": 9.47233830311407e-34,
+   "H": 208.35512507463318,
+   "p_kruskal": 5.85489917573387e-40,
+   "eta2": 0.03515352705647427,
+   "verdict": "REAL, small",
+   "highest": "Material Handling",
+   "lowest": "Testing Equipment",
+   "hi_mean": 36.67566371681416,
+   "lo_mean": 21.649363636363635
+  },
+  {
+   "dimension": "Criticality_Class",
+   "measure": "Unplanned_Downtime_Hours_30D",
+   "F": 3.4833427359107714,
+   "df": [
+    3,
+    4996
+   ],
+   "p_anova": 0.01517237747778421,
+   "H": 21.872276137088193,
+   "p_kruskal": 6.934695037334908e-05,
+   "eta2": 0.002087312996005942,
+   "verdict": "NOT SIGNIFICANT",
+   "highest": "Critical",
+   "lowest": "Low",
+   "hi_mean": 11.862602272727273,
+   "lo_mean": 9.524678747940692
+  },
+  {
+   "dimension": "Criticality_Class",
+   "measure": "Revenue_Loss_EGP_30D",
+   "F": 113.70885780536418,
+   "df": [
+    3,
+    4996
+   ],
+   "p_anova": 3.162828916180814e-71,
+   "H": 385.35380085234283,
+   "p_kruskal": 3.2921369045858704e-83,
+   "eta2": 0.06391577353912188,
+   "verdict": "REAL, medium",
+   "highest": "Critical",
+   "lowest": "Low",
+   "hi_mean": 596541.000590909,
+   "lo_mean": 135548.49266886327
+  },
+  {
+   "dimension": "Criticality_Class",
+   "measure": "Failure_Probability_Pct",
+   "F": 14.498172574269763,
+   "df": [
+    3,
+    4996
+   ],
+   "p_anova": 2.1142613057225365e-09,
+   "H": 48.07309945799534,
+   "p_kruskal": 2.0545555581687237e-10,
+   "eta2": 0.008630730238885765,
+   "verdict": "REAL but negligible",
+   "highest": "Critical",
+   "lowest": "Low",
+   "hi_mean": 33.75740909090909,
+   "lo_mean": 27.057627677100495
+  },
+  {
+   "dimension": "Maintenance_Strategy",
+   "measure": "Unplanned_Downtime_Hours_30D",
+   "F": 136.66468804011006,
+   "df": [
+    3,
+    4996
+   ],
+   "p_anova": 4.2461149163556467e-85,
+   "H": 369.58693369290813,
+   "p_kruskal": 8.554325491520463e-80,
+   "eta2": 0.0758406426750387,
+   "verdict": "REAL, medium",
+   "highest": "Reactive",
+   "lowest": "Predictive",
+   "hi_mean": 19.035518763796908,
+   "lo_mean": 8.432810858143608
+  },
+  {
+   "dimension": "Maintenance_Strategy",
+   "measure": "Revenue_Loss_EGP_30D",
+   "F": 81.90915040645929,
+   "df": [
+    3,
+    4996
+   ],
+   "p_anova": 1.0005788140573307e-51,
+   "H": 263.28348440763875,
+   "p_kruskal": 8.76011642346848e-57,
+   "eta2": 0.046879097302591446,
+   "verdict": "REAL, small",
+   "highest": "Reactive",
+   "lowest": "Predictive",
+   "hi_mean": 623765.5652980133,
+   "lo_mean": 290628.4526357268
+  },
+  {
+   "dimension": "Maintenance_Strategy",
+   "measure": "Failure_Probability_Pct",
+   "F": 396.04070738339317,
+   "df": [
+    3,
+    4996
+   ],
+   "p_anova": 8.703924945512278e-231,
+   "H": 806.0112425073348,
+   "p_kruskal": 2.1504579015071816e-174,
+   "eta2": 0.19212462151977636,
+   "verdict": "REAL, large",
+   "highest": "Reactive",
+   "lowest": "Predictive",
+   "hi_mean": 50.50037527593819,
+   "lo_mean": 24.226637478108582
+  },
+  {
+   "dimension": "Spare_Parts_Status",
+   "measure": "Unplanned_Downtime_Hours_30D",
+   "F": 249.39776079411456,
+   "df": [
+    2,
+    4997
+   ],
+   "p_anova": 5.74038229537468e-104,
+   "H": 528.4905468290781,
+   "p_kruskal": 1.7367443194219673e-115,
+   "eta2": 0.0907594759719303,
+   "verdict": "REAL, medium",
+   "highest": "Shortage",
+   "lowest": "Available",
+   "hi_mean": 20.768286384976527,
+   "lo_mean": 7.152569386038688
+  },
+  {
+   "dimension": "Spare_Parts_Status",
+   "measure": "Revenue_Loss_EGP_30D",
+   "F": 173.9883631995809,
+   "df": [
+    2,
+    4997
+   ],
+   "p_anova": 8.967720264055444e-74,
+   "H": 345.6612979925194,
+   "p_kruskal": 8.721733999341922e-76,
+   "eta2": 0.0651035063783316,
+   "verdict": "REAL, medium",
+   "highest": "Shortage",
+   "lowest": "Available",
+   "hi_mean": 704409.3042253521,
+   "lo_mean": 248459.99565601346
+  },
+  {
+   "dimension": "Spare_Parts_Status",
+   "measure": "Failure_Probability_Pct",
+   "F": 410.3702456513386,
+   "df": [
+    2,
+    4997
+   ],
+   "p_anova": 9.695686619213373e-166,
+   "H": 678.4437483340298,
+   "p_kruskal": 4.762246906763339e-148,
+   "eta2": 0.14107547294858824,
+   "verdict": "REAL, large",
+   "highest": "Shortage",
+   "lowest": "Available",
+   "hi_mean": 48.91833333333334,
+   "lo_mean": 22.71273338940286
+  },
+  {
+   "dimension": "Technician_Skill_Level",
+   "measure": "Unplanned_Downtime_Hours_30D",
+   "F": 41.39569273662245,
+   "df": [
+    3,
+    4996
+   ],
+   "p_anova": 2.041710400253317e-26,
+   "H": 110.13090862564059,
+   "p_kruskal": 1.0284017412353362e-23,
+   "eta2": 0.024254402488216496,
+   "verdict": "REAL, small",
+   "highest": "Basic",
+   "lowest": "Expert",
+   "hi_mean": 14.778293515358362,
+   "lo_mean": 8.005982905982906
+  },
+  {
+   "dimension": "Technician_Skill_Level",
+   "measure": "Revenue_Loss_EGP_30D",
+   "F": 28.063664469632958,
+   "df": [
+    3,
+    4996
+   ],
+   "p_anova": 5.452124843882797e-18,
+   "H": 91.30718771267857,
+   "p_kruskal": 1.1475438316556364e-19,
+   "eta2": 0.01657240712369462,
+   "verdict": "REAL, small",
+   "highest": "Basic",
+   "lowest": "Expert",
+   "hi_mean": 507872.5181399317,
+   "lo_mean": 288107.57272079773
+  },
+  {
+   "dimension": "Technician_Skill_Level",
+   "measure": "Failure_Probability_Pct",
+   "F": 42.88910427904107,
+   "df": [
+    3,
+    4996
+   ],
+   "p_anova": 2.3362648680106994e-27,
+   "H": 129.79043566848122,
+   "p_kruskal": 6.001152742362322e-28,
+   "eta2": 0.02510744697803423,
+   "verdict": "REAL, small",
+   "highest": "Basic",
+   "lowest": "Expert",
+   "hi_mean": 36.66943686006826,
+   "lo_mean": 26.559643874643875
+  },
+  {
+   "dimension": "Operating_Shift",
+   "measure": "Unplanned_Downtime_Hours_30D",
+   "F": 0.7222195289073415,
+   "df": [
+    2,
+    4997
+   ],
+   "p_anova": 0.48572378213002654,
+   "H": 0.2451563125996472,
+   "p_kruskal": 0.8846367623055226,
+   "eta2": 0.0002889777160525873,
+   "verdict": "NOT SIGNIFICANT",
+   "highest": "Night",
+   "lowest": "Day",
+   "hi_mean": 11.400900082576383,
+   "lo_mean": 10.831206389239176
+  },
+  {
+   "dimension": "Operating_Shift",
+   "measure": "Revenue_Loss_EGP_30D",
+   "F": 4.31426689935476,
+   "df": [
+    2,
+    4997
+   ],
+   "p_anova": 0.013426211950649896,
+   "H": 0.34189139590125706,
+   "p_kruskal": 0.8428673416529557,
+   "eta2": 0.00172376630436087,
+   "verdict": "NOT SIGNIFICANT",
+   "highest": "Night",
+   "lowest": "Day",
+   "hi_mean": 414547.1234847234,
+   "lo_mean": 358502.332013451
+  },
+  {
+   "dimension": "Operating_Shift",
+   "measure": "Failure_Probability_Pct",
+   "F": 0.06999729440079216,
+   "df": [
+    2,
+    4997
+   ],
+   "p_anova": 0.9323972568030511,
+   "H": 0.2932814358446194,
+   "p_kruskal": 0.8636041991954087,
+   "eta2": 2.8014942337652886e-05,
+   "verdict": "NOT SIGNIFICANT",
+   "highest": "Evening",
+   "lowest": "Night",
+   "hi_mean": 30.532468085106384,
+   "lo_mean": 30.26364161849711
+  },
+  {
+   "dimension": "Environment_Severity",
+   "measure": "Unplanned_Downtime_Hours_30D",
+   "F": 31.96658036911418,
+   "df": [
+    3,
+    4996
+   ],
+   "p_anova": 1.845962133457083e-20,
+   "H": 119.29815045776922,
+   "p_kruskal": 1.0929200722255698e-25,
+   "eta2": 0.018833784242281073,
+   "verdict": "REAL, small",
+   "highest": "Severe",
+   "lowest": "Controlled",
+   "hi_mean": 13.547372962607861,
+   "lo_mean": 7.508974358974359
+  },
+  {
+   "dimension": "Environment_Severity",
+   "measure": "Revenue_Loss_EGP_30D",
+   "F": 26.977667225015914,
+   "df": [
+    3,
+    4996
+   ],
+   "p_anova": 2.6564290962973325e-17,
+   "H": 103.02741340354623,
+   "p_kruskal": 3.4709911265622195e-22,
+   "eta2": 0.0159413176514926,
+   "verdict": "REAL, small",
+   "highest": "Severe",
+   "lowest": "Controlled",
+   "hi_mean": 470739.4295110259,
+   "lo_mean": 249140.8494159544
+  },
+  {
+   "dimension": "Environment_Severity",
+   "measure": "Failure_Probability_Pct",
+   "F": 119.7959684002597,
+   "df": [
+    3,
+    4996
+   ],
+   "p_anova": 6.382390361080231e-75,
+   "H": 407.2096145512569,
+   "p_kruskal": 6.073896633159159e-88,
+   "eta2": 0.06710772619323553,
+   "verdict": "REAL, medium",
+   "highest": "Severe",
+   "lowest": "Controlled",
+   "hi_mean": 37.52458293384468,
+   "lo_mean": 20.17368945868946
+  },
+  {
+   "dimension": "Manufacturer_Group",
+   "measure": "Unplanned_Downtime_Hours_30D",
+   "F": 0.7759689847032282,
+   "df": [
+    5,
+    4994
+   ],
+   "p_anova": 0.566891849668675,
+   "H": 3.9020430642758583,
+   "p_kruskal": 0.56360392919903,
+   "eta2": 0.0007762981591998468,
+   "verdict": "NOT SIGNIFICANT",
+   "highest": "OEM-A",
+   "lowest": "OEM-D",
+   "hi_mean": 11.472898936170212,
+   "lo_mean": 10.304583333333333
+  },
+  {
+   "dimension": "Manufacturer_Group",
+   "measure": "Revenue_Loss_EGP_30D",
+   "F": 0.5393581937881129,
+   "df": [
+    5,
+    4994
+   ],
+   "p_anova": 0.7465966949940327,
+   "H": 6.095514483029547,
+   "p_kruskal": 0.29703560349919234,
+   "eta2": 0.0005397147519166583,
+   "verdict": "NOT SIGNIFICANT",
+   "highest": "OEM-A",
+   "lowest": "Legacy/Other",
+   "hi_mean": 389921.8309219858,
+   "lo_mean": 351581.26813861384
+  },
+  {
+   "dimension": "Manufacturer_Group",
+   "measure": "Failure_Probability_Pct",
+   "F": 0.3235794109104757,
+   "df": [
+    5,
+    4994
+   ],
+   "p_anova": 0.8990493563973417,
+   "H": 0.9912757277979836,
+   "p_kruskal": 0.9632663720991294,
+   "eta2": 0.0003238632513319925,
+   "verdict": "NOT SIGNIFICANT",
+   "highest": "OEM-E",
+   "lowest": "Legacy/Other",
+   "hi_mean": 30.88208389715832,
+   "lo_mean": 29.765465346534654
+  },
+  {
+   "dimension": "Failure_Mode_Group",
+   "measure": "Unplanned_Downtime_Hours_30D",
+   "F": 210.47578775466135,
+   "df": [
+    3,
+    4996
+   ],
+   "p_anova": 1.451153356275156e-128,
+   "H": 595.979329980175,
+   "p_kruskal": 7.499207541991678e-129,
+   "eta2": 0.1122053333617349,
+   "verdict": "REAL, medium",
+   "highest": "Bearing / Vibration",
+   "lowest": "General Mechanical",
+   "hi_mean": 17.74789393939394,
+   "lo_mean": 7.175221331474381
+  },
+  {
+   "dimension": "Failure_Mode_Group",
+   "measure": "Revenue_Loss_EGP_30D",
+   "F": 169.2603526990234,
+   "df": [
+    3,
+    4996
+   ],
+   "p_anova": 1.6670752807045822e-104,
+   "H": 500.7029155747332,
+   "p_kruskal": 3.3599920833741898e-108,
+   "eta2": 0.09226040293700115,
+   "verdict": "REAL, medium",
+   "highest": "Bearing / Vibration",
+   "lowest": "General Mechanical",
+   "hi_mean": 628064.9526818182,
+   "lo_mean": 244132.5323875915
+  },
+  {
+   "dimension": "Failure_Mode_Group",
+   "measure": "Failure_Probability_Pct",
+   "F": 971.5575454795269,
+   "df": [
+    3,
+    4996
+   ],
+   "p_anova": 0.0,
+   "H": 1837.7397251145703,
+   "p_kruskal": 0.0,
+   "eta2": 0.36844814219878763,
+   "verdict": "REAL, large",
+   "highest": "Bearing / Vibration",
+   "lowest": "General Mechanical",
+   "hi_mean": 50.11329545454546,
+   "lo_mean": 19.645402579295922
+  }
+ ],
+ "register_meta": {
+  "n_tests": 33,
+  "alpha": 0.0015151515151515152
+ },
+ "bootstrap": {
+  "Maintenance_Strategy|Unplanned_Downtime_Hours_30D": {
+   "Preventive": {
+    "mean": 9.519785470502194,
+    "lo": 8.995919063871282,
+    "hi": 10.0465626523647,
+    "n": 2051
+   },
+   "Reactive": {
+    "mean": 19.035518763796908,
+    "lo": 17.84766004415011,
+    "hi": 20.19241721854305,
+    "n": 906
+   },
+   "Condition-Based": {
+    "mean": 9.47480577136515,
+    "lo": 8.694284128745839,
+    "hi": 10.32628190899001,
+    "n": 901
+   },
+   "Predictive": {
+    "mean": 8.432810858143608,
+    "lo": 7.828879159369527,
+    "hi": 9.087880910683014,
+    "n": 1142
+   }
+  },
+  "Spare_Parts_Status|Unplanned_Downtime_Hours_30D": {
+   "Available": {
+    "mean": 7.152569386038688,
+    "lo": 6.784520605550883,
+    "hi": 7.519928511354079,
+    "n": 2378
+   },
+   "Limited": {
+    "mean": 13.243274134790529,
+    "lo": 12.596147540983607,
+    "hi": 13.877244990892532,
+    "n": 2196
+   },
+   "Shortage": {
+    "mean": 20.768286384976527,
+    "lo": 18.980845070422536,
+    "hi": 22.63082159624413,
+    "n": 426
+   }
+  },
+  "Criticality_Class|Revenue_Loss_EGP_30D": {
+   "Medium": {
+    "mean": 292687.08945475635,
+    "lo": 273502.9707540603,
+    "hi": 313541.7692227378,
+    "n": 1724
+   },
+   "High": {
+    "mean": 428598.36211291223,
+    "lo": 402630.3991335942,
+    "hi": 455968.6945276691,
+    "n": 1789
+   },
+   "Low": {
+    "mean": 135548.49266886327,
+    "lo": 119663.64110378914,
+    "hi": 151505.86202635913,
+    "n": 607
+   },
+   "Critical": {
+    "mean": 596541.000590909,
+    "lo": 549092.8711704545,
+    "hi": 646460.6556136365,
+    "n": 880
+   }
+  },
+  "Site|Revenue_Loss_EGP_30D": {
+   "Diagnostics Service Center": {
+    "mean": 277441.67062169313,
+    "lo": 247395.77637566137,
+    "hi": 311457.8198544974,
+    "n": 756
+   },
+   "Cement Plant A": {
+    "mean": 433531.2833201189,
+    "lo": 399455.51594648167,
+    "hi": 469637.19644202176,
+    "n": 1009
+   },
+   "Lab Equipment Facility": {
+    "mean": 291510.0158859975,
+    "lo": 263592.30491945473,
+    "hi": 321695.9724907063,
+    "n": 807
+   },
+   "Drilling Site East": {
+    "mean": 404890.05395667045,
+    "lo": 370847.14633979474,
+    "hi": 444732.7911630559,
+    "n": 877
+   },
+   "Cement Plant B": {
+    "mean": 422621.2649277108,
+    "lo": 385076.3722891566,
+    "hi": 463618.2986987952,
+    "n": 830
+   },
+   "Drilling Site West": {
+    "mean": 402631.41431345354,
+    "lo": 362176.75292649097,
+    "hi": 445305.2940083218,
+    "n": 721
+   }
+  },
+  "Technician_Skill_Level|Unplanned_Downtime_Hours_30D": {
+   "Advanced": {
+    "mean": 9.378982671883733,
+    "lo": 8.835047512576859,
+    "hi": 9.936081609837899,
+    "n": 1789
+   },
+   "Intermediate": {
+    "mean": 12.417602704108164,
+    "lo": 11.756177847113886,
+    "hi": 13.11761310452418,
+    "n": 1923
+   },
+   "Expert": {
+    "mean": 8.005982905982906,
+    "lo": 7.27502849002849,
+    "hi": 8.828319088319088,
+    "n": 702
+   },
+   "Basic": {
+    "mean": 14.778293515358362,
+    "lo": 13.342610921501706,
+    "hi": 16.29269624573379,
+    "n": 586
+   }
+  }
+ },
+ "levers": {
+  "pm_compliance": {
+   "below 80%": {
+    "n": 2117,
+    "downtime_mean": 16.021091166745393,
+    "loss_mean": 534687.7476334436,
+    "fp_mean": 42.32047709022201
+   },
+   "80% or more": {
+    "n": 2883,
+    "downtime_mean": 7.291599028789456,
+    "loss_mean": 258985.4546895595,
+    "fp_mean": 21.55886923343739
+   },
+   "p_downtime": 4.366899281162643e-113,
+   "eta2": 0.0971510067890031
+  },
+  "days_since_maint": {
+   "under 60 days": {
+    "n": 3364,
+    "downtime_mean": 8.69524970273484,
+    "loss_mean": 303321.519479786,
+    "fp_mean": 24.433956599286564
+   },
+   "60+ days": {
+    "n": 1636,
+    "downtime_mean": 15.701411980440097,
+    "loss_mean": 524581.562396088,
+    "fp_mean": 42.512738386308065
+   },
+   "p_downtime": 4.33352068276976e-65,
+   "eta2": 0.0564291514827383
+  },
+  "lubricant": {
+   "LQI under 50": {
+    "n": 1956,
+    "downtime_mean": 15.799028629856851,
+    "loss_mean": 530019.9812474437,
+    "fp_mean": 43.3559100204499
+   },
+   "LQI 50+": {
+    "n": 3044,
+    "downtime_mean": 7.89600197109067,
+    "loss_mean": 276566.99878120894,
+    "fp_mean": 21.99162614980289
+   },
+   "p_downtime": 7.02382796564959e-90,
+   "eta2": 0.07767911003570246
+  },
+  "backlog": {
+   "backlog under 14d": {
+    "n": 2876,
+    "downtime_mean": 7.676491655076495,
+    "loss_mean": 264461.0878164117,
+    "fp_mean": 23.90566411682893
+   },
+   "backlog 14d+": {
+    "n": 2124,
+    "downtime_mean": 15.471158192090396,
+    "loss_mean": 526364.848893597,
+    "fp_mean": 39.07437853107345
+   },
+   "p_downtime": 1.0671233962081868e-89,
+   "eta2": 0.07752509797956529
+  },
+  "pm_deciles": [
+   {
+    "decile": 1,
+    "pm_mid": 49.795,
+    "downtime_mean": 22.83306,
+    "fp_mean": 58.10538
+   },
+   {
+    "decile": 2,
+    "pm_mid": 62.620000000000005,
+    "downtime_mean": 17.3326,
+    "fp_mean": 46.0718
+   },
+   {
+    "decile": 3,
+    "pm_mid": 70.35,
+    "downtime_mean": 13.75594,
+    "fp_mean": 36.60382
+   },
+   {
+    "decile": 4,
+    "pm_mid": 76.38,
+    "downtime_mean": 11.52946,
+    "fp_mean": 32.04164
+   },
+   {
+    "decile": 5,
+    "pm_mid": 81.10499999999999,
+    "downtime_mean": 9.3642,
+    "fp_mean": 27.4075
+   },
+   {
+    "decile": 6,
+    "pm_mid": 85.39,
+    "downtime_mean": 8.6504,
+    "fp_mean": 25.29448
+   },
+   {
+    "decile": 7,
+    "pm_mid": 90.375,
+    "downtime_mean": 7.18862,
+    "fp_mean": 22.21346
+   },
+   {
+    "decile": 8,
+    "pm_mid": 94.89500000000001,
+    "downtime_mean": 7.12294,
+    "fp_mean": 20.07614
+   },
+   {
+    "decile": 9,
+    "pm_mid": 100.0,
+    "downtime_mean": 5.5762,
+    "fp_mean": 17.33988
+   },
+   {
+    "decile": 10,
+    "pm_mid": 100.0,
+    "downtime_mean": 6.52324,
+    "fp_mean": 18.33924
+   }
+  ],
+  "health_bands": [
+   {
+    "band": "<70",
+    "n": 419,
+    "loss_mean": 1128183.7346300716,
+    "downtime_mean": 31.728090692124105,
+    "fp_mean": 76.91011933174224
+   },
+   {
+    "band": "70-79",
+    "n": 1001,
+    "loss_mean": 636145.5017482517,
+    "downtime_mean": 18.483926073926074,
+    "fp_mean": 51.71625374625375
+   },
+   {
+    "band": "80-89",
+    "n": 1941,
+    "loss_mean": 290357.7854662545,
+    "downtime_mean": 8.670829469345698,
+    "fp_mean": 26.455270479134466
+   },
+   {
+    "band": "90+",
+    "n": 1639,
+    "loss_mean": 125389.83158023185,
+    "downtime_mean": 3.850988407565589,
+    "fp_mean": 10.008346552776082
+   }
+  ]
+ },
+ "watchlist": {
+  "n": 134,
+  "exposure_total": 263080231.81,
+  "exposure_share": 0.1185281263836978,
+  "by_site": {
+   "Diagnostics Service Center": 11,
+   "Cement Plant B": 27,
+   "Drilling Site East": 24,
+   "Lab Equipment Facility": 16,
+   "Cement Plant A": 35,
+   "Drilling Site West": 21
+  },
+  "by_class": {
+   "Utility Equipment": 9,
+   "Rotating Heavy Equipment": 38,
+   "Power Equipment": 13,
+   "Manufacturing Equipment": 8,
+   "Rotating Equipment": 31,
+   "Drilling Equipment": 13,
+   "Material Handling": 10,
+   "Separation Equipment": 8,
+   "Diagnostic Equipment": 3,
+   "Testing Equipment": 1
+  },
+  "top": [
+   {
+    "Observation_ID": "PMARIS-03362",
+    "Asset_ID": "AST-0379",
+    "Observation_Date": "2026-07-28",
+    "Site": "Diagnostics Service Center",
+    "Asset_Type": "Water Purification Unit",
+    "Criticality_Class": "Critical",
+    "Failure_Probability_Pct": "83.14",
+    "Asset_Health_Index": "63.52",
+    "Unplanned_Downtime_Hours_30D": "72.98",
+    "Financial_Exposure_At_Risk_EGP": "6221459.79",
+    "Executive_Intervention_Priority": "P2 - High"
+   },
+   {
+    "Observation_ID": "PMARIS-00930",
+    "Asset_ID": "AST-0305",
+    "Observation_Date": "2026-01-13",
+    "Site": "Cement Plant B",
+    "Asset_Type": "Cement Mill",
+    "Criticality_Class": "High",
+    "Failure_Probability_Pct": "74.34",
+    "Asset_Health_Index": "67.7",
+    "Unplanned_Downtime_Hours_30D": "120.0",
+    "Financial_Exposure_At_Risk_EGP": "5876537.34",
+    "Executive_Intervention_Priority": "P2 - High"
+   },
+   {
+    "Observation_ID": "PMARIS-00410",
+    "Asset_ID": "AST-0233",
+    "Observation_Date": "2026-03-06",
+    "Site": "Cement Plant B",
+    "Asset_Type": "Crusher",
+    "Criticality_Class": "Critical",
+    "Failure_Probability_Pct": "66.01",
+    "Asset_Health_Index": "71.96",
+    "Unplanned_Downtime_Hours_30D": "81.09",
+    "Financial_Exposure_At_Risk_EGP": "5318355.18",
+    "Executive_Intervention_Priority": "P2 - High"
+   },
+   {
+    "Observation_ID": "PMARIS-01730",
+    "Asset_ID": "AST-0244",
+    "Observation_Date": "2025-09-26",
+    "Site": "Drilling Site East",
+    "Asset_Type": "Generator",
+    "Criticality_Class": "Critical",
+    "Failure_Probability_Pct": "93.52",
+    "Asset_Health_Index": "58.31",
+    "Unplanned_Downtime_Hours_30D": "77.14",
+    "Financial_Exposure_At_Risk_EGP": "5265340.0",
+    "Executive_Intervention_Priority": "P2 - High"
+   },
+   {
+    "Observation_ID": "PMARIS-04390",
+    "Asset_ID": "AST-0406",
+    "Observation_Date": "2026-03-24",
+    "Site": "Lab Equipment Facility",
+    "Asset_Type": "Packaging Machine",
+    "Criticality_Class": "Critical",
+    "Failure_Probability_Pct": "82.04",
+    "Asset_Health_Index": "63.21",
+    "Unplanned_Downtime_Hours_30D": "90.94",
+    "Financial_Exposure_At_Risk_EGP": "4796124.45",
+    "Executive_Intervention_Priority": "P2 - High"
+   },
+   {
+    "Observation_ID": "PMARIS-04024",
+    "Asset_ID": "AST-0299",
+    "Observation_Date": "2026-04-24",
+    "Site": "Cement Plant A",
+    "Asset_Type": "Kiln Drive",
+    "Criticality_Class": "Critical",
+    "Failure_Probability_Pct": "83.81",
+    "Asset_Health_Index": "67.04",
+    "Unplanned_Downtime_Hours_30D": "63.74",
+    "Financial_Exposure_At_Risk_EGP": "4559547.62",
+    "Executive_Intervention_Priority": "P2 - High"
+   },
+   {
+    "Observation_ID": "PMARIS-02942",
+    "Asset_ID": "AST-0469",
+    "Observation_Date": "2025-12-22",
+    "Site": "Cement Plant A",
+    "Asset_Type": "Industrial Fan",
+    "Criticality_Class": "High",
+    "Failure_Probability_Pct": "71.7",
+    "Asset_Health_Index": "67.72",
+    "Unplanned_Downtime_Hours_30D": "105.27",
+    "Financial_Exposure_At_Risk_EGP": "4313294.22",
+    "Executive_Intervention_Priority": "P2 - High"
+   },
+   {
+    "Observation_ID": "PMARIS-02501",
+    "Asset_ID": "AST-0015",
+    "Observation_Date": "2026-05-20",
+    "Site": "Cement Plant B",
+    "Asset_Type": "Compressor",
+    "Criticality_Class": "Critical",
+    "Failure_Probability_Pct": "66.85",
+    "Asset_Health_Index": "68.29",
+    "Unplanned_Downtime_Hours_30D": "63.44",
+    "Financial_Exposure_At_Risk_EGP": "4211174.76",
+    "Executive_Intervention_Priority": "P2 - High"
+   },
+   {
+    "Observation_ID": "PMARIS-01691",
+    "Asset_ID": "AST-0264",
+    "Observation_Date": "2026-07-30",
+    "Site": "Drilling Site West",
+    "Asset_Type": "Draw Works",
+    "Criticality_Class": "Critical",
+    "Failure_Probability_Pct": "79.79",
+    "Asset_Health_Index": "64.13",
+    "Unplanned_Downtime_Hours_30D": "58.29",
+    "Financial_Exposure_At_Risk_EGP": "4041413.14",
+    "Executive_Intervention_Priority": "P2 - High"
+   },
+   {
+    "Observation_ID": "PMARIS-04246",
+    "Asset_ID": "AST-0129",
+    "Observation_Date": "2025-11-11",
+    "Site": "Drilling Site West",
+    "Asset_Type": "Top Drive",
+    "Criticality_Class": "Critical",
+    "Failure_Probability_Pct": "75.31",
+    "Asset_Health_Index": "65.15",
+    "Unplanned_Downtime_Hours_30D": "60.45",
+    "Financial_Exposure_At_Risk_EGP": "4000369.31",
+    "Executive_Intervention_Priority": "P2 - High"
+   },
+   {
+    "Observation_ID": "PMARIS-04945",
+    "Asset_ID": "AST-0049",
+    "Observation_Date": "2026-07-29",
+    "Site": "Cement Plant B",
+    "Asset_Type": "Kiln Drive",
+    "Criticality_Class": "Critical",
+    "Failure_Probability_Pct": "76.94",
+    "Asset_Health_Index": "62.45",
+    "Unplanned_Downtime_Hours_30D": "68.58",
+    "Financial_Exposure_At_Risk_EGP": "3995897.39",
+    "Executive_Intervention_Priority": "P2 - High"
+   },
+   {
+    "Observation_ID": "PMARIS-00453",
+    "Asset_ID": "AST-0311",
+    "Observation_Date": "2026-01-18",
+    "Site": "Drilling Site East",
+    "Asset_Type": "Draw Works",
+    "Criticality_Class": "High",
+    "Failure_Probability_Pct": "74.84",
+    "Asset_Health_Index": "66.23",
+    "Unplanned_Downtime_Hours_30D": "77.9",
+    "Financial_Exposure_At_Risk_EGP": "3724811.16",
+    "Executive_Intervention_Priority": "P2 - High"
+   },
+   {
+    "Observation_ID": "PMARIS-04968",
+    "Asset_ID": "AST-0309",
+    "Observation_Date": "2026-04-02",
+    "Site": "Cement Plant A",
+    "Asset_Type": "Conveyor",
+    "Criticality_Class": "Critical",
+    "Failure_Probability_Pct": "83.27",
+    "Asset_Health_Index": "60.34",
+    "Unplanned_Downtime_Hours_30D": "42.61",
+    "Financial_Exposure_At_Risk_EGP": "3642241.1",
+    "Executive_Intervention_Priority": "P2 - High"
+   },
+   {
+    "Observation_ID": "PMARIS-01115",
+    "Asset_ID": "AST-0477",
+    "Observation_Date": "2026-04-21",
+    "Site": "Drilling Site West",
+    "Asset_Type": "Draw Works",
+    "Criticality_Class": "Critical",
+    "Failure_Probability_Pct": "72.06",
+    "Asset_Health_Index": "69.95",
+    "Unplanned_Downtime_Hours_30D": "64.6",
+    "Financial_Exposure_At_Risk_EGP": "3512522.52",
+    "Executive_Intervention_Priority": "P2 - High"
+   },
+   {
+    "Observation_ID": "PMARIS-04973",
+    "Asset_ID": "AST-0209",
+    "Observation_Date": "2026-03-10",
+    "Site": "Cement Plant A",
+    "Asset_Type": "Kiln Drive",
+    "Criticality_Class": "Critical",
+    "Failure_Probability_Pct": "90.67",
+    "Asset_Health_Index": "58.5",
+    "Unplanned_Downtime_Hours_30D": "44.11",
+    "Financial_Exposure_At_Risk_EGP": "3428756.28",
+    "Executive_Intervention_Priority": "P2 - High"
+   }
+  ],
+  "top_decile_priority_mix": {
+   "P2 - High": 97,
+   "P3 - Planned": 335,
+   "P4 - Monitor": 66,
+   "P1 - Immediate": 2
+  },
+  "top_decile_flagged_loss_share": 0.26495923811816974,
+  "high_risk_not_flagged": 829
+ }
+}

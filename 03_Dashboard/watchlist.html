@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PMARIS Risk Watchlist</title>
+<link rel="stylesheet" href="styles.css?v=4.4">
+</head>
+<body>
+<header class="topbar"><div class="topbar-inner">
+  <div class="brand">PMARIS <span>Asset Reliability</span></div>
+  <nav class="pages">
+    <a href="index.html">Overview</a>
+    <a href="dashboard.html">Explorer</a>
+    <a href="levers.html">Levers</a>
+    <a href="sites.html">Sites &amp; Equipment</a>
+    <a href="watchlist.html">Risk Watchlist</a>
+    <a href="quality.html">Data &amp; Method</a>
+  </nav>
+  <div class="spacer"></div>
+  <span class="live"><span class="dot"></span><span class="live-text">connecting…</span></span>
+  <button class="theme-btn" type="button">Dark</button>
+</div></header>
+
+<main class="wrap">
+  <section class="page-head">
+    <div class="eyebrow">Risk Watchlist · the escalation gap</div>
+    <h1>The executive flag misses most of the windows that carry the loss</h1>
+    <p class="insight"><b class="js-gap">829</b> observations have a failure probability of 50% or more but sit at P3 or P4,
+      carrying <b class="js-gap-exposure">EGP 723M</b> of financial exposure. The flag is a fixed banding of the Maintenance
+      Priority Index, which weighs failure probability only moderately (r = 0.75). Only <b class="js-escalated">134</b>
+      observations reach P1 or P2.</p>
+  </section>
+
+  <div class="notice js-stale" hidden><span class="ico">⚠</span><span class="js-stale-text"></span></div>
+  <div class="notice is-critical"><span class="ico">⚠</span><span><strong>Decision for this page.</strong> Add a second
+    escalation trigger, failure probability ≥ 50% <em>and</em> criticality High or Critical, alongside the existing index bands.
+    That rule would escalate <b class="js-rule-adds">–</b> more windows today. The table below lists every unescalated high-risk window, ranked by exposure; rows rated High or Critical are the rule's additions.</span></div>
+
+  <div class="kpi-row" id="kpis"></div>
+
+  <div class="grid two">
+    <section class="panel">
+      <h2>Escalation gap by site</h2>
+      <p class="note">High-risk observations flagged only P3/P4. Live.</p>
+      <div id="gap-site"></div>
+    </section>
+    <section class="panel">
+      <h2>Priority mix of the top 10% loss windows <span class="study-tag">study</span></h2>
+      <p class="note">The 500 observations with the largest revenue loss, by the flag they received. P1/P2 cover only 26.5% of that loss.</p>
+      <div id="mix"></div>
+    </section>
+  </div>
+
+  <section class="panel" style="margin-top:var(--gap)">
+    <h2>Top 40 unescalated high-risk observations, by financial exposure</h2>
+    <p class="note">Live. One row is one 30-day window; <code>Asset_ID</code> is shown for traceability only, since it is not a stable asset key in this export.</p>
+    <div id="tbl"></div>
+  </section>
+
+  <footer class="foot">High-risk threshold: failure probability ≥ 50%. Escalated: P1 - Immediate or P2 - High.</footer>
+</main>
+
+<script src="app.js?v=4.4"></script>
+<script>
+const L = LDD, { fmt, el, mount, tipHtml } = L;
+function render(d) {
+  const k = d.kpis;
+  const box = mount('kpis'); box.innerHTML = '';
+  [['Escalation gap', fmt.int(k.escalation_gap), `of ${fmt.int(k.high_risk_n)} high-risk observations`, true],
+   ['Proposed rule adds', fmt.int(k.rule_adds), 'gap windows rated High or Critical'],
+   ['Exposure in the gap', fmt.egpc(k.escalation_gap_exposure), fmt.pct(100 * k.escalation_gap_exposure / k.exposure_total) + ' of all exposure'],
+   ['Escalated (P1 + P2)', fmt.int(k.escalated_n), fmt.pct(100 * k.escalated_n / d.row_count) + ' of observations'],
+   ].forEach(([a, b, c, al]) =>
+    box.appendChild(el('div', 'kpi' + (al ? ' is-alert' : ''), `<div class="label">${a}</div><div class="value">${b}</div><div class="sub">${c}</div>`)));
+
+  // gap by site, computed live from the raw feed
+  const raw = d.raw, M = L.measureIndex(raw), si = raw.dimensions.indexOf('Site');
+  const g = raw.lookups.Site.map(n => ({ name: n, gap: 0, exp: 0 }));
+  raw.rows.forEach(r => { if (r[M.fp] >= d.high_risk_threshold && r[M.priority] > 1) { g[r[1 + si]].gap++; g[r[1 + si]].exp += r[M.exposure]; } });
+  g.sort((a, b) => b.gap - a.gap);
+  const mx = Math.max(...g.map(x => x.gap));
+  L.barList(mount('gap-site'), g.map(x => ({ label: x.name, value: x.gap, valueText: fmt.int(x.gap), color: L.seqFor(x.gap, mx),
+    tip: tipHtml(x.name, [['Unescalated high-risk', fmt.int(x.gap)], ['Exposure', fmt.egpc(x.exp)]]) })), { wide: true });
+
+  const mix = d.study && d.study.watchlist.top_decile_priority_mix;
+  if (mix) {
+    const order = ['P1 - Immediate', 'P2 - High', 'P3 - Planned', 'P4 - Monitor'];
+    L.barList(mount('mix'), order.map(p => ({ label: p, value: mix[p] || 0, valueText: fmt.int(mix[p] || 0), color: L.PRIORITY_COLOR[p],
+      tip: tipHtml(p, [['Top-decile windows', fmt.int(mix[p] || 0)]]) })), { wide: true });
+  }
+
+  L.dataTable(mount('tbl'), [{ label: 'Observation' }, { label: 'Date' }, { label: 'Site' }, { label: 'Asset type' },
+    { label: 'Criticality' }, { label: 'Strategy' }, { label: 'Spares' }, { label: 'Flag' },
+    { label: 'Fail. prob.', num: 1 }, { label: 'Health', num: 1 }, { label: 'Downtime', num: 1 }, { label: 'Exposure', num: 1 }],
+    d.watchlist.map(w => [w.Observation_ID + ' <span style="color:var(--text-muted)">' + w.Asset_ID + '</span>', w.Observation_Date, w.Site, w.Asset_Type,
+      w.Criticality_Class, w.Maintenance_Strategy, w.Spare_Parts_Status,
+      `<span class="badge" style="--badge:${L.PRIORITY_COLOR[w.Executive_Intervention_Priority]}">${w.Executive_Intervention_Priority.slice(0, 2)}</span>`,
+      fmt.pct(w.fp), w.health.toFixed(1), fmt.hrs(w.downtime), fmt.egpc(w.exposure)]));
+}
+LDD.start(render);
+</script>
+</body>
+</html>

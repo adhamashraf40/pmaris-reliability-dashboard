@@ -1,0 +1,7 @@
+.DS_Store
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.tmp
+03_Dashboard/live_data.tmp

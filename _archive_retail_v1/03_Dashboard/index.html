@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Overview · Sales 2024</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">Sales 2024 <span>· Live Decision Dashboard</span></div>
+    <nav class="pages">
+      <a href="index.html">Overview</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="categories.html">Categories</a>
+      <a href="geography.html">Geography</a>
+      <a href="customers.html">Customers</a>
+      <a href="quality.html">Data quality</a>
+    </nav>
+    <div class="spacer"></div>
+    <span class="live"><span class="dot"></span><span class="live-text">Connecting…</span></span>
+    <button class="theme-btn" type="button">Dark</button>
+  </div>
+</header>
+<main class="wrap">
+  <div class="page-head">
+    <div class="eyebrow">Overview</div>
+    <h1>The year in one page</h1>
+    <p class="insight">2024 closed at <b class="js-revenue">$2.56M</b> across <b><span class="js-transactions">1,000</span> transactions</b>, spread evenly over every
+      month, city and category tested. Nothing in this year's data separates a leader from a laggard.</p>
+  </div>
+
+  <section class="kpi-row" id="kpis" aria-label="Headline figures"></section>
+
+  <section class="grid">
+    <div class="panel">
+      <h2>Monthly revenue, 2024</h2>
+      <p class="note"><span class="js-months">12</span> months, all <span class="js-rows">1,000</span> lines. The dashed line is the average month; hover or
+        tab across the chart for the exact figure.</p>
+      <div class="panel-scroll" id="trend-mount"></div>
+      <details class="table-view">
+        <summary>Show the <span class="js-months">12</span> monthly figures as a table</summary>
+        <div id="trend-table"></div>
+      </details>
+    </div>
+  </section>
+
+  <div class="notice">
+    <span class="ico" aria-hidden="true">&#9670;</span>
+    <div><strong>The peaks and troughs are not seasonality.</strong> The fitted month-on-month trend is
+      <b>+0.46%</b> of an average month, and the lag-1 autocorrelation is <b>-0.47</b> &mdash; each month tends
+      to sit opposite the one before it, which is what independent draws look like, not a season. October's
+      high and September's low are the same phenomenon: twelve numbers scattered around one flat average.</div>
+  </div>
+
+  <section class="grid two">
+    <div class="panel">
+      <h2>Revenue by product category</h2>
+      <p class="note">Colour identifies the category and never moves between them. Five categories,
+        one year, revenue in dollars.</p>
+      <div class="legend" id="cat-legend"></div>
+      <div id="cat-bars"></div>
+      <details class="table-view">
+        <summary>Show categories as a table</summary>
+        <div id="cat-table"></div>
+      </details>
+    </div>
+
+    <div class="panel">
+      <h2>Revenue by city</h2>
+      <p class="note">Cities are a magnitude, not an identity, so they share one blue hue that darkens
+        with rank. Ten cities, revenue in dollars.</p>
+      <div id="city-bars"></div>
+      <details class="table-view">
+        <summary>Show cities as a table</summary>
+        <div id="city-table"></div>
+      </details>
+    </div>
+  </section>
+
+  <div class="notice is-critical">
+    <span class="ico" aria-hidden="true">&#9650;</span>
+    <div><strong>Read the totals, not the order.</strong> Revenue by category returns chi-square
+      <b>p = 0.57</b> and revenue by city <b>p = 0.72</b>; the gap between the highest and lowest recorded city is
+      matched by chance <b>35%</b> of the time. <span id="lead-line"></span> Every ranking above is inside
+      the range random variation produces, so no bar on this page is an instruction.</div>
+  </div>
+
+  <p class="through-line">The single point of this dashboard: <b>this file reports activity accurately and
+    supports no prioritisation.</b> The totals, the transaction count and the calendar coverage are real and
+    can be quoted. The ordering of categories, cities, months and customer segments cannot &mdash; every test
+    run against them comes back empty. A dashboard that ranked them anyway would be inventing the one thing
+    the data does not contain.</p>
+
+  <footer class="foot">
+    Source: sales_data_large.csv, <span class="js-rows">1,000</span> rows, calendar year 2024. Figures recompute live.
+    Statistical caveats: see <a href="quality.html">Data quality</a>.
+  </footer>
+</main>
+<script src="app.js"></script>
+<script>
+LDD.start(function render(d) {
+  // An empty or partial feed must degrade, not throw. A TypeError here would
+  // abort render and blank the whole page rather than showing stale figures.
+  if (!d || !d.kpis || !d.by_city || !d.by_category || !d.by_city.length || !d.by_category.length) {
+    return;
+  }
+  const F = LDD.fmt;
+
+  /* ---------------------------------------------------------------- KPIs */
+  const k = d.kpis;
+  const unitsPerTx = k.total_units / k.transactions;
+  const perDay = k.total_revenue / k.active_days;
+  const tiles = [
+    { label: 'Total revenue', value: F.money(k.total_revenue),
+      sub: 'Sum of all ' + F.int(d.row_count) + ' transaction lines, Jan to Dec 2024.' },
+    { label: 'Transactions', value: F.int(k.transactions),
+      sub: 'One per row in the file. No row was excluded.' },
+    { label: 'Units sold', value: F.int(k.total_units),
+      sub: unitsPerTx.toFixed(1) + ' units per transaction on average.' },
+    { label: 'Average transaction', value: F.money(k.avg_transaction),
+      sub: 'Revenue divided by transactions. Quantity does not predict it.' },
+    { label: 'Active days', value: F.int(k.active_days) + ' of 366',
+      sub: F.money(perDay) + ' per active day, across ' + k.cities + ' cities.' }
+  ];
+  const kRow = document.getElementById('kpis');
+  kRow.innerHTML = '';
+  tiles.forEach(function (t) {
+    const box = LDD.el('div', 'kpi');
+    box.appendChild(LDD.el('div', 'label', t.label));
+    box.appendChild(LDD.el('div', 'value', t.value));
+    box.appendChild(LDD.el('div', 'sub', t.sub));
+    kRow.appendChild(box);
+  });
+
+  /* ---------------------------------------------------------- hero chart */
+  const mean = d.trend.reduce(function (s, p) { return s + p.revenue; }, 0) / d.trend.length;
+  buildTrend(document.getElementById('trend-mount'), d.trend, mean);
+  LDD.dataTable(document.getElementById('trend-table'),
+    [{ label: 'Month' }, { label: 'Revenue', num: true }, { label: 'Lines', num: true },
+     { label: 'vs average', num: true }],
+    d.trend.map(function (p) {
+      const delta = (p.revenue / mean - 1) * 100;
+      return [F.month(p.month), F.money(p.revenue), F.int(p.lines),
+              (delta >= 0 ? '+' : '') + delta.toFixed(1) + '%'];
+    }));
+
+  /* ------------------------------------------------------------ category */
+  const legend = document.getElementById('cat-legend');
+  legend.innerHTML = '';
+  LDD.CATEGORY_ORDER.forEach(function (name) {
+    const item = LDD.el('span', 'legend-item');
+    const sw = LDD.el('span', 'swatch');
+    sw.style.background = LDD.colorFor(name);
+    item.appendChild(sw);
+    item.appendChild(document.createTextNode(name));
+    legend.appendChild(item);
+  });
+
+  LDD.barList(document.getElementById('cat-bars'), d.by_category.map(function (c) {
+    return {
+      label: c.name,
+      value: c.revenue,
+      valueText: F.money(c.revenue),
+      color: LDD.colorFor(c.name),
+      tip: '<div class="t-title">' + c.name + '</div>' +
+           '<div class="t-row"><span>Revenue</span><span>' + F.money(c.revenue) + '</span></div>' +
+           '<div class="t-row"><span>Share</span><span>' + F.pct(c.share) + '</span></div>' +
+           '<div class="t-row"><span>Lines</span><span>' + F.int(c.lines) + '</span></div>' +
+           '<div class="t-row"><span>Units</span><span>' + F.int(c.units) + '</span></div>' +
+           '<div class="t-note">An even split would be 20.0%. Chi-square p = 0.57.</div>'
+    };
+  }));
+  LDD.dataTable(document.getElementById('cat-table'),
+    [{ label: 'Category' }, { label: 'Revenue', num: true }, { label: 'Share', num: true },
+     { label: 'Lines', num: true }, { label: 'Units', num: true }],
+    d.by_category.map(function (c) {
+      return [c.name, F.money(c.revenue), F.pct(c.share), F.int(c.lines), F.int(c.units)];
+    }));
+
+  /* ---------------------------------------------------------------- city */
+  LDD.barList(document.getElementById('city-bars'), d.by_city.map(function (c) {
+    return {
+      label: c.name,
+      value: c.revenue,
+      valueText: F.money(c.revenue),
+      tip: '<div class="t-title">' + c.name + '</div>' +
+           '<div class="t-row"><span>Revenue</span><span>' + F.money(c.revenue) + '</span></div>' +
+           '<div class="t-row"><span>Share</span><span>' + F.pct(c.share) + '</span></div>' +
+           '<div class="t-row"><span>Lines</span><span>' + F.int(c.lines) + '</span></div>' +
+           '<div class="t-row"><span>Units</span><span>' + F.int(c.units) + '</span></div>' +
+           '<div class="t-note">An even split would be 10.0%. Chi-square p = 0.72.</div>'
+    };
+  }), { sequential: true });
+  LDD.dataTable(document.getElementById('city-table'),
+    [{ label: 'City' }, { label: 'Revenue', num: true }, { label: 'Share', num: true },
+     { label: 'Lines', num: true }, { label: 'Units', num: true }],
+    d.by_city.map(function (c) {
+      return [c.name, F.money(c.revenue), F.pct(c.share), F.int(c.lines), F.int(c.units)];
+    }));
+
+  /* ------------------------------------------ live sentence in the notice */
+  const cityGap = (d.concentration.top_decile_cities - d.concentration.even_split_cities) * 100;
+  const catGap = (d.concentration.top_decile_categories - d.concentration.even_split_categories) * 100;
+  document.getElementById('lead-line').textContent =
+    d.by_city[0].name + ' sits ' + cityGap.toFixed(1) +
+    ' points above an even split and ' + d.by_category[0].name + ' sits ' +
+    catGap.toFixed(1) + ' points, gaps this data cannot distinguish from chance.';
+
+  /* ====================================================================== */
+  function buildTrend(mount, trend, mean) {
+    const W = 960, H = 380, L = 70, R = 18, T = 22, B = 48;
+    const pw = W - L - R, ph = H - T - B;
+    const vals = trend.map(function (p) { return p.revenue; });
+    const top = Math.max.apply(null, vals) * 1.12;
+    const X = function (i) { return L + pw * (i / (trend.length - 1)); };
+    const Y = function (v) { return T + ph - (v / top) * ph; };
+
+    let grid = '', yLab = '';
+    for (let t = 0; t <= 4; t++) {
+      const v = top * t / 4, y = Y(v);
+      grid += '<line class="' + (t === 0 ? 'baseline' : 'gridline') + '" x1="' + L +
+              '" y1="' + y.toFixed(1) + '" x2="' + (W - R) + '" y2="' + y.toFixed(1) + '"/>';
+      yLab += '<text class="axis-label" x="' + (L - 12) + '" y="' + (y + 4).toFixed(1) +
+              '" text-anchor="end">' + F.compact(v) + '</text>';
+    }
+
+    let xLab = '', dots = '', hits = '';
+    const half = pw / (trend.length * 2);
+    trend.forEach(function (p, i) {
+      xLab += '<text class="axis-label" x="' + X(i).toFixed(1) + '" y="' + (T + ph + 24) +
+              '" text-anchor="middle">' + F.month(p.month) + '</text>';
+      dots += '<circle class="series-dot" cx="' + X(i).toFixed(1) + '" cy="' +
+              Y(p.revenue).toFixed(1) + '" r="5"/>';
+      hits += '<rect class="hit" tabindex="0" role="img" data-i="' + i + '" aria-label="' +
+              F.month(p.month) + ': ' + F.money(p.revenue) + ', ' + p.lines + ' lines" x="' +
+              (X(i) - half).toFixed(1) + '" y="' + T + '" width="' + (half * 2).toFixed(1) +
+              '" height="' + ph + '"/>';
+    });
+
+    const line = trend.map(function (p, i) {
+      return (i ? 'L' : 'M') + X(i).toFixed(1) + ' ' + Y(p.revenue).toFixed(1);
+    }).join(' ');
+    const area = 'M' + L + ' ' + Y(0).toFixed(1) + ' ' +
+      trend.map(function (p, i) { return 'L' + X(i).toFixed(1) + ' ' + Y(p.revenue).toFixed(1); }).join(' ') +
+      ' L' + (W - R) + ' ' + Y(0).toFixed(1) + ' Z';
+    const my = Y(mean);
+
+    mount.innerHTML =
+      '<svg class="chart" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="xMidYMid meet" ' +
+        'role="img" style="min-width:520px" aria-label="Monthly revenue for 2024, twelve points, ' +
+        'flat around an average of ' + F.money(mean) + ' a month.">' +
+        '<defs><linearGradient id="trendFade" x1="0" y1="0" x2="0" y2="1">' +
+          '<stop offset="0%" stop-color="var(--series-1)" stop-opacity="0.34"/>' +
+          '<stop offset="100%" stop-color="var(--series-1)" stop-opacity="0.02"/>' +
+        '</linearGradient></defs>' +
+        grid + yLab + xLab +
+        '<path d="' + area + '" fill="url(#trendFade)"/>' +
+        '<line class="crosshair" x1="' + L + '" y1="' + my.toFixed(1) + '" x2="' + (W - R) +
+          '" y2="' + my.toFixed(1) + '" stroke-dasharray="6 5"/>' +
+        '<text class="axis-label" x="' + (W - R) + '" y="' + (my - 9).toFixed(1) +
+          '" text-anchor="end">average month &#183; ' + F.compact(mean) + '</text>' +
+        '<path class="series-line" d="' + line + '"/>' + dots +
+        '<line class="crosshair" id="xhair" x1="0" y1="' + T + '" x2="0" y2="' + (T + ph) +
+          '" style="opacity:0"/>' +
+        '<circle class="series-dot" id="xdot" cx="0" cy="0" r="7.5" style="opacity:0"/>' +
+        hits +
+        '<rect id="overlay" class="hit" x="' + L + '" y="' + T + '" width="' + pw +
+          '" height="' + ph + '"/>' +
+      '</svg>';
+
+    const svg = mount.querySelector('svg');
+    const xh = svg.querySelector('#xhair'), xd = svg.querySelector('#xdot');
+
+    function tipFor(i) {
+      const p = trend[i], delta = (p.revenue / mean - 1) * 100;
+      return '<div class="t-title">' + F.month(p.month) + '</div>' +
+        '<div class="t-row"><span>Revenue</span><span>' + F.money(p.revenue) + '</span></div>' +
+        '<div class="t-row"><span>Lines</span><span>' + F.int(p.lines) + '</span></div>' +
+        '<div class="t-row"><span>vs average</span><span>' + (delta >= 0 ? '+' : '') +
+          delta.toFixed(1) + '%</span></div>' +
+        '<div class="t-note">Distance from the average is not a trend: the year is flat at +0.46%.</div>';
+    }
+    function mark(i) {
+      xh.setAttribute('x1', X(i).toFixed(1));
+      xh.setAttribute('x2', X(i).toFixed(1));
+      xh.style.opacity = 1;
+      xd.setAttribute('cx', X(i).toFixed(1));
+      xd.setAttribute('cy', Y(trend[i].revenue).toFixed(1));
+      xd.style.opacity = 1;
+    }
+    function clear() { xh.style.opacity = 0; xd.style.opacity = 0; LDD.hideTip(); }
+
+    const ov = svg.querySelector('#overlay');
+    ov.addEventListener('mousemove', function (e) {
+      const r = svg.getBoundingClientRect();
+      const px = (e.clientX - r.left) / r.width * W;
+      let i = Math.round((px - L) / pw * (trend.length - 1));
+      i = Math.max(0, Math.min(trend.length - 1, i));
+      mark(i);
+      LDD.showTip(e, tipFor(i));
+    });
+    ov.addEventListener('mouseleave', clear);
+
+    svg.querySelectorAll('rect.hit[data-i]').forEach(function (r) {
+      const i = +r.getAttribute('data-i');
+      r.addEventListener('focus', function () {
+        mark(i);
+        const b = r.getBoundingClientRect();
+        LDD.showTip({ clientX: b.left + b.width / 2, clientY: b.top + 24 }, tipFor(i));
+      });
+      r.addEventListener('blur', clear);
+    });
+  }
+});
+</script>
+</body>
+</html>

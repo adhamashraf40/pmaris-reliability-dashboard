@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Customers · Sales 2024</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">Sales 2024 <span>· Live Decision Dashboard</span></div>
+    <nav class="pages">
+      <a href="index.html">Overview</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="categories.html">Categories</a>
+      <a href="geography.html">Geography</a>
+      <a href="customers.html">Customers</a>
+      <a href="quality.html">Data quality</a>
+    </nav>
+    <div class="spacer"></div>
+    <span class="live"><span class="dot"></span><span class="live-text">Connecting…</span></span>
+    <button class="theme-btn" type="button">Dark</button>
+  </div>
+</header>
+<main class="wrap">
+  <div class="page-head">
+    <div class="eyebrow">Demographics</div>
+    <h1>Who the transactions belong to</h1>
+    <p class="insight">Revenue steps down from <b>$566k</b> in the 18-29 band to <b>$468k</b> at 60-plus, a slope well inside what random assignment produces.</p>
+  </div>
+
+  <div class="notice is-critical">
+    <span class="ico" aria-hidden="true">&#9632;</span>
+    <div>
+      <strong>CustomerID is not a usable key, so there are no customers on this page.</strong>
+      The file carries 631 distinct CustomerID values, and <strong>258 of them</strong> appear on rows with
+      conflicting age, gender or city — the same ID is one age, gender and city on one row and a different
+      age, gender and city on another. An ID that changes its own demographics cannot identify a person.
+      Everything below therefore describes the <strong>demographic attributes of transactions</strong>, not
+      of customers. No customer count, no repeat-purchase rate, no churn and no lifetime value can be
+      computed from this data, and none is shown. Every percentage here is a share of revenue across rows.
+    </div>
+  </div>
+
+  <div class="kpi-row" id="kpis"></div>
+
+  <div class="grid two">
+    <section class="panel">
+      <h2>Revenue by age band</h2>
+      <p class="note">Five ordered bands on one blue ramp: age is a magnitude along a scale, not five separate identities. Hover or tab a bar for detail.</p>
+      <div id="ageBars"></div>
+      <details class="table-view">
+        <summary>Show age-band table</summary>
+        <div class="panel-scroll"><div id="ageTable"></div></div>
+      </details>
+    </section>
+
+    <section class="panel">
+      <h2>Revenue by gender</h2>
+      <p class="note">Two recorded values, two fixed slot colours.</p>
+      <div class="legend" id="genderLegend"></div>
+      <div id="genderBars"></div>
+      <p class="note" id="genderNote" style="margin-top:14px"></p>
+      <details class="table-view">
+        <summary>Show gender table</summary>
+        <div class="panel-scroll"><div id="genderTable"></div></div>
+      </details>
+    </section>
+  </div>
+
+  <div class="notice">
+    <span class="ico" aria-hidden="true">&#9650;</span>
+    <div>
+      The age bands fall in a tidy descending order, and that order is not a finding. The distance from the
+      highest band to the lowest is about <span id="slopeGap">4 points</span> of total revenue, and the spread
+      across the five bands tests as no signal (chi-square p = 0.44) — a gap this size appears routinely when <span class="js-rows">1,000</span> rows are assigned
+      to five buckets at random. Read the totals. Do not read the ranking as an instruction, and do not move a
+      budget toward a band because it sits at the top of this chart.
+    </div>
+  </div>
+
+  <section class="panel">
+    <h2>Age band by transaction count and average transaction value</h2>
+    <p class="note">
+      An age-band × product-category cross-tab is <strong>not available</strong>: the live data contract
+      publishes the category matrix against city only, so no age × category cell exists to show. What can be
+      shown honestly is volume against size — transactions per band, and the average value of one transaction
+      (revenue ÷ transactions) inside it.
+    </p>
+    <div class="panel-scroll"><div id="mixTable"></div></div>
+    <p class="note" style="margin-top:14px">
+      Average transaction value sits in a narrow band around the <span class="js-avg-transaction">$2,562</span> all-rows average, and the same caution
+      applies to these columns as to the chart above. Revenue is uncorrelated with quantity in this file, so an
+      average here is a per-row arithmetic mean, never a basket value.
+    </p>
+  </section>
+
+  <div class="through-line">
+    <b>What this page supports:</b> a description of the transaction mix — how revenue distributes across the
+    age and gender recorded on each row. <b>What it cannot support:</b> any statement about people. Customer
+    counts, loyalty, repeat rate and segment value all need a stable key, and this file does not have one.
+  </div>
+
+  <footer class="foot">
+    Source: sales_data_large.csv, <span class="js-rows">1,000</span> rows, calendar year 2024. Figures recompute live.
+    Statistical caveats: see <a href="quality.html">Data quality</a>.
+  </footer>
+</main>
+<script src="app.js"></script>
+<script>
+LDD.start(function render(d) {
+  const F = LDD.fmt;
+  const ages = d.by_age_band || [];
+  const genders = d.by_gender || [];
+  const avgOf = r => r.lines ? r.revenue / r.lines : 0;
+
+  /* ------------------------------------------------------------------ KPIs */
+  const male = genders.find(g => g.name === 'Male') || genders[0] || { name: 'Male', share: 0 };
+  const female = genders.find(g => g.name === 'Female') || genders[1] || { name: 'Female', share: 0 };
+  const kpis = document.getElementById('kpis');
+  kpis.innerHTML = '';
+  [
+    { label: 'Transactions covered', value: F.int(d.kpis.transactions),
+      sub: 'Rows, not people. One row is one transaction.' },
+    { label: 'Age span', value: '18 to 69',
+      sub: 'Recorded on the row, grouped into five ordered bands.' },
+    { label: 'Gender split', value: F.pct(male.share) + ' / ' + F.pct(female.share),
+      sub: male.name + ' / ' + female.name + ' share of revenue. Chi-square p = 0.61.' }
+  ].forEach(k => {
+    const tile = LDD.el('div', 'kpi');
+    tile.appendChild(LDD.el('div', 'label', k.label));
+    tile.appendChild(LDD.el('div', 'value', k.value));
+    tile.appendChild(LDD.el('div', 'sub', k.sub));
+    kpis.appendChild(tile);
+  });
+
+  /* -------------------------------------------------------------- age bars */
+  LDD.barList(document.getElementById('ageBars'), ages.map(a => ({
+    label: a.name,
+    value: a.revenue,
+    valueText: F.money(a.revenue),
+    tip: '<div class="t-title">Age ' + a.name + '</div>' +
+         '<div class="t-row"><span>Revenue</span><span>' + F.money(a.revenue) + '</span></div>' +
+         '<div class="t-row"><span>Share</span><span>' + F.pct(a.share) + '</span></div>' +
+         '<div class="t-row"><span>Transactions</span><span>' + F.int(a.lines) + '</span></div>' +
+         '<div class="t-row"><span>Avg transaction</span><span>' + F.money(avgOf(a)) + '</span></div>' +
+         '<div class="t-note">Inside the range random assignment produces.</div>'
+  })), { sequential: true });
+
+  const spread = ages.length
+    ? (Math.max.apply(null, ages.map(a => a.share)) - Math.min.apply(null, ages.map(a => a.share))) * 100
+    : 0;
+  document.getElementById('slopeGap').textContent = spread.toFixed(1) + ' points';
+
+  LDD.dataTable(document.getElementById('ageTable'),
+    [{ label: 'Age band' }, { label: 'Revenue', num: true }, { label: 'Share', num: true },
+     { label: 'Transactions', num: true }, { label: 'Units', num: true },
+     { label: 'Avg transaction', num: true }],
+    ages.map(a => [a.name, F.money(a.revenue), F.pct(a.share), F.int(a.lines),
+                   F.int(a.units), F.money(avgOf(a))]));
+
+  /* ----------------------------------------------------------- gender bars */
+  const genderColor = g => g.name === 'Male' ? 'var(--series-1)' : 'var(--series-2)';
+  const legend = document.getElementById('genderLegend');
+  legend.innerHTML = '';
+  genders.forEach(g => {
+    const item = LDD.el('span', 'legend-item');
+    const sw = LDD.el('span', 'swatch');
+    sw.style.background = genderColor(g);
+    item.appendChild(sw);
+    item.appendChild(document.createTextNode(g.name));
+    legend.appendChild(item);
+  });
+
+  LDD.barList(document.getElementById('genderBars'), genders.map(g => ({
+    label: g.name,
+    value: g.revenue,
+    valueText: F.money(g.revenue),
+    color: genderColor(g),
+    tip: '<div class="t-title">' + g.name + '</div>' +
+         '<div class="t-row"><span>Revenue</span><span>' + F.money(g.revenue) + '</span></div>' +
+         '<div class="t-row"><span>Share</span><span>' + F.pct(g.share) + '</span></div>' +
+         '<div class="t-row"><span>Transactions</span><span>' + F.int(g.lines) + '</span></div>' +
+         '<div class="t-row"><span>Avg transaction</span><span>' + F.money(avgOf(g)) + '</span></div>' +
+         '<div class="t-note">Gap tests at chi-square p = 0.61 - no difference.</div>'
+  })));
+
+  const gap = genders.length === 2 ? Math.abs(genders[0].share - genders[1].share) * 100 : 0;
+  document.getElementById('genderNote').innerHTML =
+    'The ' + gap.toFixed(1) + '-point gap between these two bars tests at <strong>chi-square p = 0.61</strong>, ' +
+    'which is no difference at all. Treat the two as equal, and do not split a budget on this chart.';
+
+  LDD.dataTable(document.getElementById('genderTable'),
+    [{ label: 'Gender' }, { label: 'Revenue', num: true }, { label: 'Share', num: true },
+     { label: 'Transactions', num: true }, { label: 'Units', num: true }],
+    genders.map(g => [g.name, F.money(g.revenue), F.pct(g.share), F.int(g.lines), F.int(g.units)]));
+
+  /* --------------------------------------------- age: volume against size */
+  const totalLines = ages.reduce((s, a) => s + a.lines, 0) || 1;
+  LDD.dataTable(document.getElementById('mixTable'),
+    [{ label: 'Age band' }, { label: 'Transactions', num: true },
+     { label: 'Share of transactions', num: true }, { label: 'Avg transaction', num: true },
+     { label: 'Units', num: true }, { label: 'Units per transaction', num: true }],
+    ages.map(a => [a.name, F.int(a.lines), F.pct(a.lines / totalLines), F.money(avgOf(a)),
+                   F.int(a.units), (a.lines ? a.units / a.lines : 0).toFixed(1)]));
+});
+</script>
+</body>
+</html>

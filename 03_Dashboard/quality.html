@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PMARIS Data and Method</title>
+<link rel="stylesheet" href="styles.css?v=4.4">
+</head>
+<body>
+<header class="topbar"><div class="topbar-inner">
+  <div class="brand">PMARIS <span>Asset Reliability</span></div>
+  <nav class="pages">
+    <a href="index.html">Overview</a>
+    <a href="dashboard.html">Explorer</a>
+    <a href="levers.html">Levers</a>
+    <a href="sites.html">Sites &amp; Equipment</a>
+    <a href="watchlist.html">Risk Watchlist</a>
+    <a href="quality.html">Data &amp; Method</a>
+  </nav>
+  <div class="spacer"></div>
+  <span class="live"><span class="dot"></span><span class="live-text">connecting…</span></span>
+  <button class="theme-btn" type="button">Dark</button>
+</div></header>
+
+<main class="wrap">
+  <section class="page-head">
+    <div class="eyebrow">Data &amp; Method</div>
+    <h1>The file is clean, and its signal is real, but one key is broken</h1>
+    <p class="insight">Zero missing cells, zero duplicates, zero type errors across <span class="js-rows">5,000</span> rows and 60 columns.
+      <b>26 of 33</b> significance tests survive a Bonferroni threshold. The limit is structural: <code>Asset_ID</code> does not
+      identify one asset, so nothing here can be tracked per asset over time.</p>
+  </section>
+  <div class="notice js-stale" hidden><span class="ico">⚠</span><span class="js-stale-text"></span></div>
+
+  <div class="grid two">
+    <section class="panel">
+      <h2>Stage 1 cleaning checklist <span class="study-tag">study</span></h2>
+      <p class="note">Playbook §2. Nothing was dropped or imputed.</p>
+      <div id="clean"></div>
+    </section>
+    <section class="panel">
+      <h2>Do the columns mean what they say? <span class="study-tag">study</span></h2>
+      <p class="note">Playbook §18 step 4.</p>
+      <ul class="lede-list" id="meaning"></ul>
+    </section>
+  </div>
+
+  <section class="panel" style="margin-top:var(--gap)">
+    <h2>Significance register <span class="study-tag">study</span></h2>
+    <p class="note" id="reg-note">One-way ANOVA confirmed by Kruskal-Wallis; both must clear the Bonferroni threshold. η² ≥ 0.01 small, ≥ 0.06 medium, ≥ 0.14 large.</p>
+    <div id="register"></div>
+  </section>
+
+  <section class="panel" style="margin-top:var(--gap)">
+    <h2>Columns piled at a bound <span class="study-tag">study</span></h2>
+    <p class="note">≥ 5% of rows at the minimum or maximum. Treat ceiling-heavy indices as capped, not as measured beyond the cap.</p>
+    <div id="bounds"></div>
+  </section>
+
+  <footer class="foot">Reproduce: <code>python 02_Analysis/analyze_pmaris.py</code> (stdlib only, about 90 s). Method: <code>00_Method/AIB902_Agentic_Analytics_Dashboard_Playbook.md</code> v4.0.</footer>
+</main>
+
+<script src="app.js?v=4.4"></script>
+<script>
+const L = LDD, { fmt, mount } = L;
+function render(d) {
+  const st = d.study;
+  if (!st) return;
+  const s1 = st.stage1;
+  L.dataTable(mount('clean'), [{ label: 'Check' }, { label: 'Result' }], [
+    ['Missing cells', fmt.int(s1.missing)], ['Exact duplicate rows', fmt.int(s1.dups)],
+    ['Duplicate Observation_IDs', fmt.int(s1.dup_ids)], ['Numeric type errors', fmt.int(s1.type_errors)],
+    ['Unparseable dates', fmt.int(s1.bad_dates)],
+    ['Load factor above 100%', fmt.int(s1.load_over_100) + ' rows, overload, kept'],
+    ['Revenue loss beyond 3 SD', fmt.int(s1.outliers_3sd.Revenue_Loss_EGP_30D) + ' rows, real tail, kept'],
+    ['Rare levels (&lt;1% of rows)', 'Failure mode: 3 levels, 27 rows, pooled as “Other”; P1: 2 rows; Inspection Fail: 36; Sensor Degraded: 48'],
+  ]);
+  const inc = s1.asset_inconsistent, der = s1.derived, pb = s1.priority_bands;
+  mount('meaning').innerHTML = [
+    `<b>Asset_ID is not an asset key.</b> Of 500 IDs, ${inc.Site} change site, ${inc.Asset_Type} change asset type and ${inc.Criticality_Class} change criticality between observations; age runs backwards in time for ${s1.age_backwards}. Every row is treated as an independent observation window.`,
+    `<b>Financial exposure is near-identical to revenue loss</b> (r = ${der.Financial_Exposure_vs_Revenue_Loss}). Do not add them together.`,
+    `<b>Failure probability mirrors the health index</b> (r = ${der.Failure_Probability_vs_Health_Index}). Showing both adds no information.`,
+    `<b>Executive priority is a fixed banding</b> of the Maintenance Priority Index: P4 ${pb['P4 - Monitor'][0]}–${pb['P4 - Monitor'][1]}, P3 ${pb['P3 - Planned'][0]}–${pb['P3 - Planned'][1]}, P2 ${pb['P2 - High'][0]}–${pb['P2 - High'][1]}, P1 ${pb['P1 - Immediate'][0]}+.`,
+    `<b>The composite scores are derived columns,</b> so correlations among them (0.95+) describe a formula, not a discovery.`,
+  ].map(x => '<li>' + x + '</li>').join('');
+
+  const meta = st.register_meta;
+  const real = st.register.filter(r => r.verdict.startsWith('REAL')).length;
+  mount('reg-note').textContent = `${meta.n_tests} tests, Bonferroni threshold 0.05 / ${meta.n_tests} = ${meta.alpha.toFixed(5)}. ${real} survive. One-way ANOVA confirmed by Kruskal-Wallis; both must clear the threshold. η² ≥ 0.01 small, ≥ 0.06 medium, ≥ 0.14 large.`;
+  const p = v => v === 0 ? '<1e-300' : v < 1e-3 ? v.toExponential(1) : v.toFixed(3);
+  const short = { Unplanned_Downtime_Hours_30D: 'Downtime', Revenue_Loss_EGP_30D: 'Revenue loss', Failure_Probability_Pct: 'Failure prob.' };
+  const reg = st.register.slice().sort((a, b) => b.eta2 - a.eta2);
+  L.dataTable(mount('register'), [{ label: 'Dimension' }, { label: 'Measure' }, { label: 'F', num: 1 }, { label: 'p (ANOVA)', num: 1 },
+    { label: 'p (K-W)', num: 1 }, { label: 'η²', num: 1 }, { label: 'Verdict' }],
+    reg.map(r => [fmt.label(r.dimension), short[r.measure], r.F.toFixed(1), p(r.p_anova), p(r.p_kruskal), r.eta2.toFixed(4),
+      `<span class="${r.verdict.startsWith('REAL') ? 'verdict-real' : 'verdict-null'}">${r.verdict}</span>`]));
+
+  L.dataTable(mount('bounds'), [{ label: 'Column' }, { label: 'Min', num: 1 }, { label: '% at min', num: 1 }, { label: 'Max', num: 1 }, { label: '% at max', num: 1 }],
+    Object.entries(s1.bounded).map(([k, v]) => [fmt.label(k), fmt.int(v.min), fmt.pct(v.at_min_pct), fmt.int(v.max), fmt.pct(v.at_max_pct)]));
+}
+LDD.start(render);
+</script>
+</body>
+</html>

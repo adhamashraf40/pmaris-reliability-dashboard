@@ -1,0 +1,346 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Categories · Sales 2024</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">Sales 2024 <span>· Live Decision Dashboard</span></div>
+    <nav class="pages">
+      <a href="index.html">Overview</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="categories.html">Categories</a>
+      <a href="geography.html">Geography</a>
+      <a href="customers.html">Customers</a>
+      <a href="quality.html">Data quality</a>
+    </nav>
+    <div class="spacer"></div>
+    <span class="live"><span class="dot"></span><span class="live-text">Connecting…</span></span>
+    <button class="theme-btn" type="button">Dark</button>
+  </div>
+</header>
+<main class="wrap">
+  <div class="page-head">
+    <div class="eyebrow">Product categories</div>
+    <h1>Five categories, one flat line</h1>
+    <p class="insight" id="insight">All five categories land within three percentage points of an even split, and the category-by-city pattern tests as noise (permutation p = 0.18).</p>
+  </div>
+
+  <div class="kpi-row">
+    <div class="kpi">
+      <div class="label">Categories</div>
+      <div class="value" id="kpi-count">—</div>
+      <div class="sub" id="kpi-count-sub">&nbsp;</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Widest share gap</div>
+      <div class="value" id="kpi-gap">—</div>
+      <div class="sub" id="kpi-gap-sub">&nbsp;</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Largest share</div>
+      <div class="value" id="kpi-top">—</div>
+      <div class="sub" id="kpi-top-sub">&nbsp;</div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <section class="panel">
+      <h2>Revenue by category</h2>
+      <p class="note">Full year 2024, all <span class="js-rows">1,000</span> transaction lines. An even split would give each category 20.0% of revenue; the observed spread is narrower than a ranked bar chart makes it look.</p>
+      <div class="legend" id="cat-legend"></div>
+      <div id="cat-bars"></div>
+      <details class="table-view">
+        <summary>View revenue by category as a table</summary>
+        <div id="cat-bars-table"></div>
+      </details>
+    </section>
+  </div>
+
+  <div class="notice">
+    <span class="ico" aria-hidden="true">&#9670;</span>
+    <div><strong>This ranking is not a finding.</strong> A chi-square test on revenue by category returns <strong>p = 0.57</strong>: the order of these five bars is inside the range random variation produces. The widest gap between any two categories is about three points, a gap this data cannot distinguish from chance. Read the totals, not the order.</div>
+  </div>
+
+  <div class="grid two">
+    <section class="panel">
+      <h2>Units sold by category</h2>
+      <p class="note">Volume, not value. Same colour slots as the revenue chart, so a category keeps its identity across panels.</p>
+      <div id="units-bars"></div>
+      <details class="table-view">
+        <summary>View units as a table</summary>
+        <div id="units-table"></div>
+      </details>
+    </section>
+    <section class="panel">
+      <h2>Transactions by category</h2>
+      <p class="note">Count of transaction lines. Units and transactions track revenue closely, so nothing here is being carried by a handful of unusual sales.</p>
+      <div id="lines-bars"></div>
+      <details class="table-view">
+        <summary>View transactions as a table</summary>
+        <div id="lines-table"></div>
+      </details>
+    </section>
+  </div>
+
+  <div class="grid">
+    <section class="panel">
+      <h2>Category by city revenue</h2>
+      <p class="note">Each cell is one category's revenue in one city. Darker means more revenue on a single blue ramp: cities are magnitude here, not identity. Hover or focus any cell for the exact figure.</p>
+      <div class="legend" id="heat-legend"></div>
+      <div class="panel-scroll" id="heat-mount"></div>
+      <details class="table-view">
+        <summary>View the full 5 by 10 matrix as a table</summary>
+        <div class="panel-scroll" id="heat-table"></div>
+      </details>
+    </section>
+  </div>
+
+  <div class="notice is-critical">
+    <span class="ico" aria-hidden="true">&#9670;</span>
+    <div><strong>The hot and cold cells above are noise.</strong> A permutation test on this exact matrix returns <strong>p = 0.18</strong>: roughly one shuffle in five produces a category-by-city pattern at least as strong as this one. There is no evidence of a category-city affinity to act on, however striking a single dark cell looks.</div>
+  </div>
+
+  <div class="grid">
+    <section class="panel">
+      <h2>Every category, every number</h2>
+      <p class="note">Revenue, share, units and transactions per category: the exact figures behind every chart on this page.</p>
+      <details class="table-view" open>
+        <summary>View the full category table</summary>
+        <div class="panel-scroll" id="full-table"></div>
+      </details>
+    </section>
+  </div>
+
+  <div class="through-line">
+    <b>What this page supports:</b> confident statements about category totals and volumes.
+    <b>What it does not support:</b> any instruction to favour or drop a category. The spread across
+    all five is narrow, and both the ranking and the category-by-city pattern test as noise.
+  </div>
+
+  <footer class="foot">
+    Source: sales_data_large.csv, <span class="js-rows">1,000</span> rows, calendar year 2024. Figures recompute live.
+    Statistical caveats: see <a href="quality.html">Data quality</a>.
+  </footer>
+</main>
+<script src="app.js"></script>
+<script>
+LDD.start(function render(d) {
+  // An empty or partial feed must degrade, not throw. A TypeError here would
+  // abort render and blank the whole page rather than showing stale figures.
+  if (!d || !d.kpis || !d.by_city || !d.by_category || !d.by_city.length || !d.by_category.length) {
+    return;
+  }
+  const f = LDD.fmt;
+  const cats = d.by_category;                 // sorted desc by revenue
+  const top = cats[0];
+  const bottom = cats[cats.length - 1];
+  const gapPts = (top.share - bottom.share) * 100;
+
+  /* ------------------------------------------------------------- headline */
+  document.getElementById('insight').innerHTML =
+    'All five categories land within three percentage points of an even split. The widest gap, ' +
+    top.name + ' over ' + bottom.name + ', is <b>' + gapPts.toFixed(1) + ' points</b>, and the ' +
+    'category-by-city pattern tests as noise (permutation <b>p = 0.18</b>).';
+
+  /* ----------------------------------------------------------------- KPIs */
+  document.getElementById('kpi-count').textContent = f.int(cats.length);
+  document.getElementById('kpi-count-sub').textContent =
+    'Each holds between ' + f.pct(bottom.share) + ' and ' + f.pct(top.share) + ' of revenue.';
+
+  document.getElementById('kpi-gap').textContent = gapPts.toFixed(1) + ' pts';
+  document.getElementById('kpi-gap-sub').textContent =
+    'Top minus bottom share. Chance alone produces gaps this wide (p = 0.57).';
+
+  document.getElementById('kpi-top').textContent = f.pct(top.share);
+  document.getElementById('kpi-top-sub').textContent =
+    top.name + ' · an even five-way split would be 20.0%.';
+
+  /* ------------------------------------------- legend, fixed colour slots */
+  const legend = document.getElementById('cat-legend');
+  legend.innerHTML = '';
+  LDD.CATEGORY_ORDER.forEach(function (name) {
+    const row = cats.find(function (c) { return c.name === name; });
+    legend.appendChild(LDD.el('span', 'legend-item',
+      '<span class="swatch" style="background:' + LDD.colorFor(name) + '"></span>' +
+      name + (row ? ' · ' + f.pct(row.share) : '')));
+  });
+
+  /* ---------------------------------------------------- revenue bar chart */
+  LDD.barList(document.getElementById('cat-bars'), cats.map(function (c) {
+    return {
+      label: c.name,
+      value: c.revenue,
+      valueText: f.compact(c.revenue),
+      tip: '<div class="t-title">' + c.name + '</div>' +
+           '<div class="t-row"><span>Revenue</span><span>' + f.money(c.revenue) + '</span></div>' +
+           '<div class="t-row"><span>Share</span><span>' + f.pct(c.share) + '</span></div>' +
+           '<div class="t-row"><span>Units</span><span>' + f.int(c.units) + '</span></div>' +
+           '<div class="t-row"><span>Transactions</span><span>' + f.int(c.lines) + '</span></div>' +
+           '<div class="t-note">Even split = 20.0%. Ranking p = 0.57.</div>'
+    };
+  }));
+
+  LDD.dataTable(document.getElementById('cat-bars-table'),
+    [{ label: 'Category' }, { label: 'Revenue', num: true }, { label: 'Share', num: true }],
+    cats.map(function (c) {
+      return ['<span class="mini-swatch" style="background:' + LDD.colorFor(c.name) + '"></span>' +
+              c.name, f.money(c.revenue), f.pct(c.share)];
+    }));
+
+  /* --------------------------------------- units and transactions panels */
+  const totUnits = cats.reduce(function (s, c) { return s + c.units; }, 0);
+  const totLines = cats.reduce(function (s, c) { return s + c.lines; }, 0);
+
+  const byUnits = cats.slice().sort(function (a, b) { return b.units - a.units; });
+  LDD.barList(document.getElementById('units-bars'), byUnits.map(function (c) {
+    return {
+      label: c.name,
+      value: c.units,
+      valueText: f.int(c.units),
+      tip: '<div class="t-title">' + c.name + '</div>' +
+           '<div class="t-row"><span>Units</span><span>' + f.int(c.units) + '</span></div>' +
+           '<div class="t-row"><span>Share of units</span><span>' + f.pct(c.units / totUnits) + '</span></div>' +
+           '<div class="t-row"><span>Revenue</span><span>' + f.money(c.revenue) + '</span></div>'
+    };
+  }));
+  LDD.dataTable(document.getElementById('units-table'),
+    [{ label: 'Category' }, { label: 'Units', num: true }, { label: 'Share of units', num: true }],
+    byUnits.map(function (c) { return [c.name, f.int(c.units), f.pct(c.units / totUnits)]; }));
+
+  const byLines = cats.slice().sort(function (a, b) { return b.lines - a.lines; });
+  LDD.barList(document.getElementById('lines-bars'), byLines.map(function (c) {
+    return {
+      label: c.name,
+      value: c.lines,
+      valueText: f.int(c.lines),
+      tip: '<div class="t-title">' + c.name + '</div>' +
+           '<div class="t-row"><span>Transactions</span><span>' + f.int(c.lines) + '</span></div>' +
+           '<div class="t-row"><span>Share of transactions</span><span>' + f.pct(c.lines / totLines) + '</span></div>' +
+           '<div class="t-row"><span>Avg per transaction</span><span>' + f.money(c.revenue / c.lines) + '</span></div>'
+    };
+  }));
+  LDD.dataTable(document.getElementById('lines-table'),
+    [{ label: 'Category' }, { label: 'Transactions', num: true }, { label: 'Avg per transaction', num: true }],
+    byLines.map(function (c) { return [c.name, f.int(c.lines), f.money(c.revenue / c.lines)]; }));
+
+  /* --------------------------------------------------------------- heat map */
+  const m = d.matrix;
+  const rowsCat = m.categories, colsCity = m.cities, V = m.values;
+  let lo = Infinity, hi = -Infinity;
+  V.forEach(function (r) {
+    r.forEach(function (v) { if (v < lo) lo = v; if (v > hi) hi = v; });
+  });
+  const span = Math.max(1, hi - lo);
+
+  const themeAttr = document.documentElement.getAttribute('data-theme');
+  const isDark = themeAttr ? themeAttr === 'dark'
+    : window.matchMedia('(prefers-color-scheme: dark)').matches;
+  // The sequential ramp inverts between themes, so the ink choice inverts too.
+  const inkFor = function (t) {
+    const darkBg = isDark ? (t < 0.5) : (t >= 0.5);
+    return darkBg ? '#ffffff' : '#0b0b0b';
+  };
+
+  const NS = 'http://www.w3.org/2000/svg';
+  const mk = function (tag, attrs, text) {
+    const n = document.createElementNS(NS, tag);
+    for (const k in attrs) n.setAttribute(k, attrs[k]);
+    if (text !== undefined) n.textContent = text;
+    return n;
+  };
+
+  const L = 120, T = 80, CW = 60, CH = 48, RM = 16, BM = 14;
+  const W = L + colsCity.length * CW + RM;
+  const H = T + rowsCat.length * CH + BM;
+
+  const svg = mk('svg', {
+    viewBox: '0 0 ' + W + ' ' + H,
+    preserveAspectRatio: 'xMinYMin meet',
+    class: 'chart',
+    role: 'img',
+    'aria-label': 'Heat map of revenue for five product categories across ten cities'
+  });
+  svg.style.minWidth = W + 'px';   // keeps cells legible; .panel-scroll handles overflow
+
+  colsCity.forEach(function (city, j) {
+    const x = L + j * CW + CW / 2, y = T - 11;
+    svg.appendChild(mk('text', {
+      x: x, y: y, class: 'axis-label', 'text-anchor': 'start',
+      transform: 'rotate(-40 ' + x + ' ' + y + ')'
+    }, city));
+  });
+
+  rowsCat.forEach(function (cat, i) {
+    svg.appendChild(mk('text', {
+      x: L - 12, y: T + i * CH + CH / 2 + 4, class: 'axis-label',
+      'text-anchor': 'end', fill: 'var(--text-secondary)'
+    }, cat));
+
+    colsCity.forEach(function (city, j) {
+      const v = V[i][j];
+      const t = (v - lo) / span;
+      const rect = mk('rect', {
+        x: L + j * CW, y: T + i * CH, width: CW, height: CH,
+        class: 'heat-cell', fill: LDD.seqStep(t), tabindex: '0', role: 'img',
+        'aria-label': cat + ' in ' + city + ': ' + f.money(v)
+      });
+      LDD.hoverable(rect, function () {
+        return '<div class="t-title">' + cat + ' · ' + city + '</div>' +
+          '<div class="t-row"><span>Revenue</span><span>' + f.money(v) + '</span></div>' +
+          '<div class="t-row"><span>Matrix range</span><span>' +
+            f.compact(lo) + ' to ' + f.compact(hi) + '</span></div>' +
+          '<div class="t-note">Pattern tests as noise: permutation p = 0.18.</div>';
+      });
+      svg.appendChild(rect);
+
+      svg.appendChild(mk('text', {
+        x: L + j * CW + CW / 2, y: T + i * CH + CH / 2 + 4,
+        'text-anchor': 'middle', 'pointer-events': 'none',
+        fill: inkFor(t), 'font-size': '10.5',
+        style: 'font-variant-numeric: tabular-nums;'
+      }, f.compact(v)));
+    });
+  });
+
+  const heatMount = document.getElementById('heat-mount');
+  heatMount.innerHTML = '';
+  heatMount.appendChild(svg);
+
+  const hl = document.getElementById('heat-legend');
+  hl.innerHTML = '';
+  hl.appendChild(LDD.el('span', 'legend-item', 'Lower ' + f.compact(lo)));
+  hl.appendChild(LDD.el('span', 'legend-item',
+    [0, 0.2, 0.4, 0.6, 0.8, 1].map(function (t) {
+      return '<span class="swatch" style="border-radius:0;background:' + LDD.seqStep(t) + '"></span>';
+    }).join('')));
+  hl.appendChild(LDD.el('span', 'legend-item', f.compact(hi) + ' higher'));
+
+  LDD.dataTable(document.getElementById('heat-table'),
+    [{ label: 'Category' }].concat(colsCity.map(function (c) { return { label: c, num: true }; })),
+    rowsCat.map(function (cat, i) {
+      return [cat].concat(V[i].map(function (v) { return f.money(v); }));
+    }));
+
+  /* ------------------------------------------------- full category table */
+  LDD.dataTable(document.getElementById('full-table'),
+    [{ label: 'Rank' }, { label: 'Category' }, { label: 'Revenue', num: true },
+     { label: 'Share of revenue', num: true }, { label: 'Units', num: true },
+     { label: 'Share of units', num: true }, { label: 'Transactions', num: true },
+     { label: 'Avg per transaction', num: true }],
+    cats.map(function (c, i) {
+      return [
+        String(i + 1),
+        '<span class="mini-swatch" style="background:' + LDD.colorFor(c.name) + '"></span>' + c.name,
+        f.money(c.revenue), f.pct(c.share), f.int(c.units), f.pct(c.units / totUnits),
+        f.int(c.lines), f.money(c.revenue / c.lines)
+      ];
+    }));
+});
+</script>
+</body>
+</html>

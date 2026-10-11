@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Geography · Sales 2024</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">Sales 2024 <span>· Live Decision Dashboard</span></div>
+    <nav class="pages">
+      <a href="index.html">Overview</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="categories.html">Categories</a>
+      <a href="geography.html">Geography</a>
+      <a href="customers.html">Customers</a>
+      <a href="quality.html">Data quality</a>
+    </nav>
+    <div class="spacer"></div>
+    <span class="live"><span class="dot"></span><span class="live-text">Connecting…</span></span>
+    <button class="theme-btn" type="button">Dark</button>
+  </div>
+</header>
+<main class="wrap">
+  <div class="page-head">
+    <div class="eyebrow">City drill-down</div>
+    <h1>Ten cities, one flat market</h1>
+    <p class="insight">Every city's <b>95% confidence interval overlaps every other city's</b>, so the apparent
+      ranking from Dallas down to New York is not reproducible.</p>
+  </div>
+
+  <div class="kpi-row" id="kpis"></div>
+
+  <div class="notice is-critical">
+    <span class="ico" aria-hidden="true">■</span>
+    <span><strong>The widest city-to-city revenue ratio is 1.43&times;</strong> — and a gap that size is reproduced by chance in
+      <strong>35% of 20,000 simulations</strong> of the same data with the city labels shuffled. No city should be
+      prioritised, funded, defunded or staffed differently on the evidence in this file.</span>
+  </div>
+
+  <div class="panel">
+    <h2>Revenue by city</h2>
+    <p class="note">One sequential blue hue: the shade encodes magnitude, not identity. The dashed vertical marker
+      on every bar is the even-split benchmark — <span id="even-line">the revenue each city would hold if the ten
+      split the year equally</span>. Every bar sits close to it.</p>
+    <div id="city-bars"></div>
+    <details class="table-view">
+      <summary>View as table</summary>
+      <div class="panel-scroll" id="city-table"></div>
+    </details>
+  </div>
+
+  <div id="ci-stale"></div>
+
+  <div class="panel" style="margin-top:18px">
+    <h2>Each city's share, with its 95% confidence interval</h2>
+    <p class="note">The dot is the share this file happens to record. The bar is the range that share moves across
+      when the <span class="js-rows">1,000</span> rows are resampled 4,000 times. Read the overlap, not the order.</p>
+    <div class="legend">
+      <span class="legend-item"><span class="swatch" style="background:var(--seq-600)"></span>Observed share</span>
+      <span class="legend-item"><span class="swatch" style="background:var(--seq-250)"></span>95% bootstrap interval</span>
+      <span class="legend-item"><span class="swatch" style="background:var(--baseline)"></span>Even split, 10.0%</span>
+    </div>
+    <div class="panel-scroll" id="ci-chart"></div>
+    <p class="note" style="margin:14px 0 0">Dallas is the top city in only <strong>46% of 4,000 resamples</strong>.
+      Every interval crosses the 10.0% even-split line, and every interval overlaps every other one.</p>
+    <details class="table-view">
+      <summary>View as table</summary>
+      <div class="panel-scroll" id="ci-table"></div>
+    </details>
+  </div>
+
+  <div class="panel" style="margin-top:18px">
+    <h2>Revenue by day of the week</h2>
+    <p class="note" id="weekend-note">Monday to Sunday, in calendar order. Shading is the same single blue ramp by
+      magnitude — the shades barely separate, which is itself the finding.</p>
+    <div id="wd-bars"></div>
+    <details class="table-view">
+      <summary>View as table</summary>
+      <div class="panel-scroll" id="wd-table"></div>
+    </details>
+  </div>
+
+  <div class="through-line">
+    <b>What this page supports:</b> the totals. Recorded revenue is spread across ten cities in shares running from
+    8.3% to 11.8%, all of them straddling the 10.0% even split.
+    <b>What it does not support:</b> any sentence that begins "our strongest market is".
+  </div>
+
+  <footer class="foot">
+    Source: sales_data_large.csv, <span class="js-rows">1,000</span> rows, calendar year 2024. Figures recompute live.
+    Statistical caveats: see <a href="quality.html">Data quality</a>.
+  </footer>
+</main>
+<script src="app.js"></script>
+<script>
+LDD.start(function render(d) {
+  // An empty or partial feed must degrade, not throw. A TypeError here would
+  // abort render and blank the whole page rather than showing stale figures.
+  if (!d || !d.kpis || !d.by_city || !d.by_category || !d.by_city.length || !d.by_category.length) {
+    return;
+  }
+  const f = LDD.fmt;
+  const total     = d.kpis.total_revenue;
+  const cities    = d.by_city;
+  const n         = cities.length;
+  const even      = total / n;
+  const evenShare = 1 / n;
+
+  /* Measured 95% bootstrap intervals, 4,000 resamples of the 1,000 rows.
+     Hard-coded: the interval is a property of the study, not of the live feed. */
+  const CI = [
+    { name: 'Dallas',       share: 11.8, low: 9.6, high: 14.1 },
+    { name: 'Chicago',      share: 11.0, low: 8.9, high: 13.3 },
+    { name: 'Phoenix',      share: 10.4, low: 8.3, high: 12.8 },
+    { name: 'San Jose',     share: 10.4, low: 8.2, high: 12.6 },
+    { name: 'Los Angeles',  share: 10.1, low: 8.0, high: 12.5 },
+    { name: 'Houston',      share: 10.1, low: 8.0, high: 12.3 },
+    { name: 'Philadelphia', share:  9.8, low: 7.7, high: 11.9 },
+    { name: 'San Antonio',  share:  9.1, low: 7.1, high: 11.2 },
+    { name: 'San Diego',    share:  9.0, low: 7.0, high: 11.1 },
+    { name: 'New York',     share:  8.3, low: 6.4, high: 10.2 }
+  ];
+  const ciFor = name => CI.find(c => c.name === name);
+  const CI_STUDY_ROWS = 1000;   // the file the 4,000-resample study was run on
+
+  /* The intervals above are a property of the study, not of the live feed, so
+     they must not silently be read as describing a file they were not measured
+     on. If the source has changed, say so rather than showing a stale chart. */
+  (function ciStaleBanner() {
+    const host = document.getElementById('ci-stale');
+    if (!host) return;
+    if (d.row_count === CI_STUDY_ROWS) { host.innerHTML = ''; return; }
+    host.innerHTML =
+      '<div class="notice is-critical"><span class="ico">&#9888;</span><div>' +
+      '<strong>These intervals are stale.</strong> They were measured on the ' +
+      f.int(CI_STUDY_ROWS) + '-row file; the source now has ' + f.int(d.row_count) +
+      ' rows. The dots show the current shares, but the whiskers do not describe ' +
+      'this data. Re-run the bootstrap before reading them.' +
+      '</div></div>';
+  })();
+
+  /* ------------------------------------------------------------------ KPIs */
+  const top = cities[0], bottom = cities[n - 1];
+  const lines = cities.map(c => c.lines);
+  document.getElementById('kpis').innerHTML =
+    '<div class="kpi">' +
+      '<div class="label">Cities covered</div>' +
+      '<div class="value">' + f.int(d.kpis.cities) + '</div>' +
+      '<div class="sub">' + f.int(Math.min.apply(null, lines)) + '&ndash;' +
+        f.int(Math.max.apply(null, lines)) + ' transactions each, ' +
+        f.int(d.kpis.transactions) + ' in total.</div>' +
+    '</div>' +
+    '<div class="kpi">' +
+      '<div class="label">Top city share</div>' +
+      '<div class="value">' + f.pct(top.share) + '</div>' +
+      '<div class="sub">' + top.name + ', ' + f.money(top.revenue) + ' of ' + f.money(total) + '.</div>' +
+    '</div>' +
+    '<div class="kpi">' +
+      '<div class="label">Even-split benchmark</div>' +
+      '<div class="value">' + f.pct(evenShare) + '</div>' +
+      '<div class="sub">' + top.name + ' sits ' + (top.share * 100 - 10).toFixed(1) + ' points above it, ' +
+        bottom.name + ' ' + (10 - bottom.share * 100).toFixed(1) + ' below.</div>' +
+    '</div>';
+
+  /* -------------------------------------------------------- revenue by city */
+  const cityRows = cities.map(function (c) {
+    const ci = ciFor(c.name);
+    return {
+      label: c.name,
+      value: c.revenue,
+      valueText: f.compact(c.revenue),
+      tip: '<div class="t-title">' + c.name + '</div>' +
+        '<div class="t-row"><span>Revenue</span><span>' + f.money(c.revenue) + '</span></div>' +
+        '<div class="t-row"><span>Share</span><span>' + f.pct(c.share) + '</span></div>' +
+        '<div class="t-row"><span>Transactions</span><span>' + f.int(c.lines) + '</span></div>' +
+        '<div class="t-row"><span>Units</span><span>' + f.int(c.units) + '</span></div>' +
+        (ci ? '<div class="t-row"><span>95% interval</span><span>' + ci.low + '&ndash;' + ci.high + '%</span></div>' : '') +
+        '<div class="t-note">An even split would be ' + f.money(even) + ' (10.0%).</div>'
+    };
+  });
+  const cityMount = document.getElementById('city-bars');
+  LDD.barList(cityMount, cityRows, { sequential: true });
+
+  // Even-split reference marker, drawn into every track at the shared bar scale.
+  const markPct = (even / cities[0].revenue * 100).toFixed(2);
+  cityMount.querySelectorAll('.bar-track').forEach(function (track) {
+    const m = document.createElement('div');
+    m.setAttribute('aria-hidden', 'true');
+    m.style.cssText = 'position:absolute;top:-4px;bottom:-4px;width:0;pointer-events:none;' +
+      'border-left:1px dashed var(--baseline);left:' + markPct + '%;';
+    track.appendChild(m);
+  });
+  document.getElementById('even-line').textContent =
+    f.money(even) + ', or 10.0% of total revenue, for every city';
+
+  LDD.dataTable(document.getElementById('city-table'),
+    [{ label: 'City' }, { label: 'Revenue', num: true }, { label: 'Share', num: true },
+     { label: 'vs even split', num: true }, { label: 'Transactions', num: true }, { label: 'Units', num: true }],
+    cities.map(function (c) {
+      const gap = (c.share - evenShare) * 100;
+      return [c.name, f.money(c.revenue), f.pct(c.share),
+        (gap >= 0 ? '+' : '') + gap.toFixed(1) + ' pts', f.int(c.lines), f.int(c.units)];
+    }));
+
+  /* --------------------------------------- confidence-interval dot chart */
+  (function ciChart(mount, rows) {
+    const W = 900, rowH = 30, padTop = 62, padBot = 48;
+    const H = padTop + rows.length * rowH + padBot;
+    const L = 152, R = 806;
+    const lo = Math.min.apply(null, rows.map(function (r) { return Math.min(r.low, r.share); }));
+    const hi = Math.max.apply(null, rows.map(function (r) { return Math.max(r.high, r.share); }));
+    const xMin = Math.floor(Math.min(lo, evenShare * 100) - 1);
+    const xMax = Math.ceil(Math.max(hi, evenShare * 100) + 1);
+    const X = function (v) { return L + (v - xMin) / (xMax - xMin) * (R - L); };
+
+    let s = '';
+    for (let t = xMin; t <= xMax; t++) {
+      s += '<line class="gridline" x1="' + X(t) + '" y1="' + (padTop - 16) +
+           '" x2="' + X(t) + '" y2="' + (H - padBot + 8) + '"></line>' +
+           '<text class="axis-label" x="' + X(t) + '" y="' + (H - padBot + 26) +
+           '" text-anchor="middle">' + t + '%</text>';
+    }
+    s += '<text class="axis-label" x="' + ((L + R) / 2) + '" y="' + (H - 8) +
+         '" text-anchor="middle">Share of total revenue</text>';
+
+    // even-split reference line
+    s += '<line class="crosshair" x1="' + X(evenShare * 100) + '" y1="' + (padTop - 28) +
+         '" x2="' + X(evenShare * 100) + '" y2="' + (H - padBot + 8) + '" stroke-width="1.5"></line>' +
+         '<text class="axis-label" x="' + X(evenShare * 100) + '" y="' + (padTop - 36) +
+         '" text-anchor="middle" style="fill:var(--text-secondary)">even split ' + f.pct(evenShare) + '</text>';
+
+    rows.forEach(function (r, i) {
+      const y = padTop + i * rowH + rowH / 2;
+      s += '<text class="axis-label" x="' + (L - 16) + '" y="' + (y + 4) +
+           '" text-anchor="end" style="fill:var(--text-secondary);font-size:12px">' + r.name + '</text>';
+      s += '<line x1="' + X(r.low) + '" y1="' + y + '" x2="' + X(r.high) + '" y2="' + y +
+           '" stroke="var(--seq-250)" stroke-width="9" stroke-linecap="round"></line>';
+      s += '<line x1="' + X(r.low) + '" y1="' + (y - 7) + '" x2="' + X(r.low) + '" y2="' + (y + 7) +
+           '" stroke="var(--seq-400)" stroke-width="1.5"></line>';
+      s += '<line x1="' + X(r.high) + '" y1="' + (y - 7) + '" x2="' + X(r.high) + '" y2="' + (y + 7) +
+           '" stroke="var(--seq-400)" stroke-width="1.5"></line>';
+      s += '<circle cx="' + X(r.share) + '" cy="' + y + '" r="5.5" fill="var(--seq-600)" ' +
+           'stroke="var(--surface-1)" stroke-width="2"></circle>';
+      s += '<text class="axis-label" x="' + (X(r.high) + 13) + '" y="' + (y + 4) +
+           '" text-anchor="start" style="fill:var(--text-primary);font-size:12px;font-weight:600">' +
+           r.share.toFixed(1) + '%</text>';
+      s += '<rect class="hit" data-i="' + i + '" x="0" y="' + (y - rowH / 2) + '" width="' + W +
+           '" height="' + rowH + '" tabindex="0" role="img" aria-label="' + r.name + ': ' +
+           r.share.toFixed(1) + ' percent of revenue, 95% interval ' + r.low + ' to ' + r.high +
+           ' percent"></rect>';
+    });
+
+    mount.innerHTML = '<svg class="chart" viewBox="0 0 ' + W + ' ' + H + '" ' +
+      'preserveAspectRatio="xMidYMid meet" style="min-width:560px" role="group" ' +
+      'aria-label="Dot and whisker chart: each city\'s revenue share with its 95% bootstrap confidence interval">' +
+      s + '</svg>';
+
+    mount.querySelectorAll('.hit').forEach(function (hit) {
+      const r = rows[+hit.dataset.i];
+      const city = cities.find(function (c) { return c.name === r.name; });
+      LDD.hoverable(hit, function () {
+        return '<div class="t-title">' + r.name + '</div>' +
+          '<div class="t-row"><span>Observed share</span><span>' + r.share.toFixed(1) + '%</span></div>' +
+          '<div class="t-row"><span>95% interval</span><span>' + r.low + '% &ndash; ' + r.high + '%</span></div>' +
+          '<div class="t-row"><span>Interval width</span><span>' + (r.high - r.low).toFixed(1) + ' pts</span></div>' +
+          (city ? '<div class="t-row"><span>Revenue</span><span>' + f.money(city.revenue) + '</span></div>' : '') +
+          '<div class="t-note">The interval contains 10.0%, so this city cannot be separated from an even split.</div>';
+      });
+    });
+  })(document.getElementById('ci-chart'), CI);
+
+  LDD.dataTable(document.getElementById('ci-table'),
+    [{ label: 'City' }, { label: 'Observed share', num: true }, { label: '95% low', num: true },
+     { label: '95% high', num: true }, { label: 'Interval width', num: true }, { label: 'Contains 10.0%?' }],
+    CI.map(function (r) {
+      return [r.name, r.share.toFixed(1) + '%', r.low.toFixed(1) + '%', r.high.toFixed(1) + '%',
+        (r.high - r.low).toFixed(1) + ' pts', (r.low <= 10 && r.high >= 10) ? 'Yes' : 'No'];
+    }));
+
+  /* --------------------------------------------------------- by weekday */
+  const wd = d.by_weekday;
+  const wdMax = Math.max.apply(null, wd.map(function (w) { return w.revenue; }));
+  LDD.barList(document.getElementById('wd-bars'), wd.map(function (w) {
+    return {
+      label: w.name,
+      value: w.revenue,
+      valueText: f.compact(w.revenue),
+      color: LDD.seqStep(w.revenue / wdMax),
+      tip: '<div class="t-title">' + w.name + '</div>' +
+        '<div class="t-row"><span>Revenue</span><span>' + f.money(w.revenue) + '</span></div>' +
+        '<div class="t-row"><span>Share</span><span>' + f.pct(w.share) + '</span></div>' +
+        '<div class="t-row"><span>Transactions</span><span>' + f.int(w.lines) + '</span></div>' +
+        '<div class="t-note">One seventh of the week would be 14.3%.</div>'
+    };
+  }));
+
+  const wkEnd = wd.filter(function (w) { return w.name === 'Sat' || w.name === 'Sun'; })
+                  .reduce(function (a, w) { return a + w.revenue; }, 0);
+  document.getElementById('weekend-note').innerHTML =
+    'Monday to Sunday, in calendar order; shading is the same single blue ramp by magnitude, and the shades ' +
+    'barely separate. The weekend carries <strong>' + f.pct(wkEnd / total) + '</strong> of revenue on ' +
+    '<strong>28.6%</strong> of the days &mdash; a difference that tests as no signal (chi-square p = 0.45).';
+
+  LDD.dataTable(document.getElementById('wd-table'),
+    [{ label: 'Day' }, { label: 'Revenue', num: true }, { label: 'Share', num: true },
+     { label: 'vs 14.3% even', num: true }, { label: 'Transactions', num: true }],
+    wd.map(function (w) {
+      const gap = (w.share - 1 / 7) * 100;
+      return [w.name, f.money(w.revenue), f.pct(w.share),
+        (gap >= 0 ? '+' : '') + gap.toFixed(1) + ' pts', f.int(w.lines)];
+    }));
+});
+</script>
+</body>
+</html>

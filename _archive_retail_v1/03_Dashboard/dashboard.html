@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard · Sales 2024</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">Sales 2024 <span>· Live Decision Dashboard</span></div>
+    <nav class="pages">
+      <a href="index.html">Overview</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="categories.html">Categories</a>
+      <a href="geography.html">Geography</a>
+      <a href="customers.html">Customers</a>
+      <a href="quality.html">Data quality</a>
+    </nav>
+    <div class="spacer"></div>
+    <span class="live"><span class="dot"></span><span class="live-text">Connecting&hellip;</span></span>
+    <button class="theme-btn" type="button">Dark</button>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="page-head">
+    <div class="eyebrow">COMPREHENSIVE VIEW</div>
+    <h1>Everything, cross-filtered</h1>
+    <p class="insight">Every visual below reads the same
+      <span class="js-rows">1,000</span> rows. Click any slice, bar, column or slicer
+      and the whole page re-filters to it. The figures stay honest under every
+      combination, and so does the warning: none of these differences is bigger
+      than chance produces.</p>
+  </div>
+</main>
+
+<div class="filterbar">
+  <div class="wrap" style="padding-bottom:0">
+    <div class="filterbar-inner">
+      <div id="sl-cat"></div>
+      <div id="sl-city"></div>
+      <div id="sl-band"></div>
+      <div id="sl-gender"></div>
+    </div>
+  </div>
+</div>
+
+<main class="wrap">
+  <div class="filter-summary">
+    <span id="fs-text">Loading&hellip;</span>
+    <button class="reset" id="fs-reset" type="button" hidden>Reset all filters</button>
+  </div>
+
+  <div class="kpi-row" id="kpis"></div>
+
+  <div class="notice" id="signal-notice">
+    <span class="ico">&#9679;</span>
+    <div><strong>Read the totals, not the order.</strong> Filtering changes which rows
+      are counted, so every ranking on this page will reshuffle as you click. That
+      reshuffling is the point: across nine tests the differences between categories,
+      cities, genders, age bands, weekdays and months are all inside the range random
+      variation produces. A bar that moves to the top under one filter has not
+      become a better bet.</div>
+  </div>
+
+  <div class="grid two">
+    <div class="panel">
+      <h2>Revenue mix by category</h2>
+      <p class="note">Share of the filtered revenue. Click a segment to filter the
+        page to that category; click it again to clear.</p>
+      <div class="donut-wrap">
+        <div id="donut"></div>
+        <div class="donut-legend" id="donut-legend"></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Revenue by city</h2>
+      <p class="note">One sequential blue hue: cities are a magnitude here, not an
+        identity. Click a bar to filter.</p>
+      <div id="city-bars"></div>
+    </div>
+  </div>
+
+  <div class="panel" style="margin-top:18px">
+    <h2>Monthly revenue</h2>
+    <p class="note">Columns rather than a line, so a single filtered month reads
+      clearly. The dashed line is the average of the months currently shown. Click a
+      column to filter the page to that month.</p>
+    <div class="panel-scroll"><div id="month-cols"></div></div>
+    <details class="table-view"><summary>Show the monthly figures as a table</summary>
+      <div id="month-table"></div>
+    </details>
+  </div>
+
+  <div class="grid two" style="margin-top:18px">
+    <div class="panel">
+      <h2>Category mix within each city</h2>
+      <p class="note">Stacked composition. Each segment keeps its category colour, so
+        a city's mix is comparable across rows. Click a segment to filter.</p>
+      <div class="panel-scroll"><div id="stack"></div></div>
+    </div>
+
+    <div class="panel">
+      <h2>Age band and gender</h2>
+      <p class="note">Age bands use the ordered blue ramp; gender uses two fixed slot
+        colours. Both are attributes of the transaction, not of a person.</p>
+      <div id="band-bars"></div>
+      <div class="legend" style="margin:16px 0 10px" id="gender-legend"></div>
+      <div id="gender-bars"></div>
+    </div>
+  </div>
+
+  <div class="panel" style="margin-top:18px">
+    <h2>Transaction volume against revenue, by city</h2>
+    <p class="note">If revenue were driven by anything other than how many
+      transactions a city happens to record, points would scatter away from the
+      diagonal. They do not: revenue tracks transaction count almost exactly.
+      Axes are fitted to the data range, not zero-based. Click a point to filter.</p>
+    <div class="panel-scroll"><div id="scatter"></div></div>
+  </div>
+
+  <div class="panel" style="margin-top:18px">
+    <h2>Revenue by day of week</h2>
+    <p class="note">Calendar order, not ranked order. A weekday effect would show as
+      a repeated shape; this is flat (chi-square p = 0.45 on the full file).</p>
+    <div class="panel-scroll"><div id="dow-cols"></div></div>
+  </div>
+
+  <div class="through-line" id="through-line"></div>
+
+  <footer class="foot">
+    Source: sales_data_large.csv, <span class="js-rows">1,000</span> rows, calendar
+    year 2024. Every visual on this page recomputes from the live feed and from the
+    current filter selection. Statistical caveats: see <a href="quality.html">Data quality</a>.
+  </footer>
+</main>
+
+<script src="app.js"></script>
+<script>
+(function () {
+  var f = LDD.fmt;
+  var filters = LDD.newFilters();
+  var latest = null;
+
+  function repaint() { if (latest) draw(latest); }
+
+  LDD.start(function render(d) {
+    if (!d || !d.raw || !d.raw.rows || !d.kpis) return;
+    latest = d;
+    draw(d);
+  });
+
+  function draw(d) {
+    var raw  = d.raw;
+    var rows = LDD.filterRows(raw, filters);
+    var active = LDD.anyFilter(filters);
+
+    /* ------------------------------------------------------------ slicers */
+    LDD.slicer(document.getElementById('sl-cat'), {
+      label: 'Product category', values: raw.cats, selected: filters.cat,
+      colorFn: LDD.colorFor, onChange: repaint });
+    LDD.slicer(document.getElementById('sl-city'), {
+      label: 'City', values: raw.cities, selected: filters.city, onChange: repaint });
+    LDD.slicer(document.getElementById('sl-band'), {
+      label: 'Age band', values: raw.age_bands, selected: filters.band, onChange: repaint });
+    LDD.slicer(document.getElementById('sl-gender'), {
+      label: 'Gender', values: raw.genders, selected: filters.gender, onChange: repaint });
+
+    /* ------------------------------------------------------ filter summary */
+    var fsText = document.getElementById('fs-text');
+    var reset  = document.getElementById('fs-reset');
+    // NOTE: do not also write to #fs-count here. The innerHTML assignment below
+    // replaces this element's children, so the id disappears after the first
+    // draw and a getElementById(...).textContent would throw on every draw
+    // after it, aborting render with the slicers already repainted.
+    fsText.innerHTML = (active ? 'Showing ' : 'Showing all ')
+      + '<span class="count">' + f.int(rows.length) + '</span> of '
+      + f.int(raw.rows.length) + ' transactions'
+      + (active ? ', filtered.' : '.');
+    reset.hidden = !active;
+    reset.onclick = function () { filters = LDD.newFilters(); repaint(); };
+
+    if (!rows.length) {
+      ['kpis','donut','donut-legend','city-bars','month-cols','stack',
+       'band-bars','gender-bars','scatter','dow-cols'].forEach(function (id) {
+        var n = document.getElementById(id);
+        if (n) n.innerHTML = '';
+      });
+      document.getElementById('kpis').innerHTML =
+        '<div class="empty-state" style="grid-column:1/-1">'
+        + 'No transactions match this combination of filters. '
+        + 'Clear one to bring the visuals back.</div>';
+      document.getElementById('through-line').innerHTML = '';
+      return;
+    }
+
+    /* --------------------------------------------------------------- KPIs */
+    var rev = LDD.totalRev(rows), qty = LDD.totalQty(rows);
+    var byMonth = LDD.groupBy(rows, function (r) { return r[LDD.F.date].slice(0, 7); }, null)
+                     .sort(function (a, b) { return a.name < b.name ? -1 : 1; });
+    var spark = LDD.sparkline(byMonth.map(function (m) { return m.revenue; }));
+    var days  = {}; rows.forEach(function (r) { days[r[LDD.F.date]] = 1; });
+
+    document.getElementById('kpis').innerHTML =
+      tile('Revenue', f.money(rev), pctOf(rev, LDD.totalRev(raw.rows)) + ' of the full file', spark)
+    + tile('Transactions', f.int(rows.length), pctOf(rows.length, raw.rows.length) + ' of the full file')
+    + tile('Units', f.int(qty), (qty / rows.length).toFixed(1) + ' per transaction')
+    + tile('Average transaction', f.money(rev / rows.length),
+           'Revenue is uncorrelated with quantity, so this is a row mean, not a basket value.')
+    + tile('Days with a sale', f.int(Object.keys(days).length), 'out of 366 in 2024');
+
+    /* -------------------------------------------------------------- donut */
+    var cats = LDD.groupBy(rows, function (r) { return raw.cats[r[LDD.F.cat]]; });
+    LDD.donut(document.getElementById('donut'),
+      cats.map(function (c) {
+        return { name: c.name, value: c.revenue, color: LDD.colorFor(c.name) };
+      }),
+      { centreLabel: active ? 'filtered revenue' : 'total revenue',
+        onClick: function (name) { toggle(filters.cat, name); } });
+
+    document.getElementById('donut-legend').innerHTML = cats.map(function (c) {
+      return '<div class="row"><span class="swatch" style="background:'
+        + LDD.colorFor(c.name) + '"></span>' + c.name
+        + '<span class="v">' + f.pct(c.revenue / rev) + '</span></div>';
+    }).join('');
+
+    /* ---------------------------------------------------------- city bars */
+    var cities = LDD.groupBy(rows, function (r) { return raw.cities[r[LDD.F.city]]; });
+    LDD.barList(document.getElementById('city-bars'), cities.map(function (c, i) {
+      return {
+        label: c.name, value: c.revenue, valueText: f.compact(c.revenue),
+        color: LDD.seqStep(1 - i / Math.max(1, cities.length - 1)),
+        tip: '<div class="t-title">' + c.name + '</div>'
+           + '<div class="t-row"><span>Revenue</span><span>' + f.money(c.revenue) + '</span></div>'
+           + '<div class="t-row"><span>Share</span><span>' + f.pct(c.revenue / rev) + '</span></div>'
+           + '<div class="t-row"><span>Transactions</span><span>' + f.int(c.lines) + '</span></div>'
+           + '<div class="t-note">Click to filter</div>'
+      };
+    }));
+    Array.prototype.forEach.call(
+      document.querySelectorAll('#city-bars .bar-track'), function (t, i) {
+        t.style.cursor = 'pointer';
+        t.addEventListener('click', function () { toggle(filters.city, cities[i].name); });
+      });
+
+    /* ------------------------------------------------------ month columns */
+    var meanMonth = byMonth.reduce(function (s, m) { return s + m.revenue; }, 0) / byMonth.length;
+    LDD.columns(document.getElementById('month-cols'),
+      byMonth.map(function (m) {
+        return { name: m.name, label: f.month(m.name), value: m.revenue, lines: m.lines };
+      }),
+      { mean: meanMonth, onClick: function (name) { toggle(filters.month, name); } });
+    LDD.dataTable(document.getElementById('month-table'),
+      [{ label: 'Month' }, { label: 'Revenue', num: true },
+       { label: 'Transactions', num: true }, { label: 'Share', num: true }],
+      byMonth.map(function (m) {
+        return [f.month(m.name), f.money(m.revenue), f.int(m.lines), f.pct(m.revenue / rev)];
+      }));
+
+    /* ------------------------------------------------ stacked city x cat */
+    LDD.stackedBars(document.getElementById('stack'),
+      cities.slice(0, 10).map(function (c) {
+        var sub = rows.filter(function (r) { return raw.cities[r[LDD.F.city]] === c.name; });
+        var parts = raw.cats.map(function (cat) {
+          var v = sub.filter(function (r) { return raw.cats[r[LDD.F.cat]] === cat; })
+                     .reduce(function (s, r) { return s + r[LDD.F.rev]; }, 0);
+          return { name: cat, value: v, color: LDD.colorFor(cat) };
+        });
+        return { name: c.name, parts: parts };
+      }),
+      { onClick: function (catName) { toggle(filters.cat, catName); } });
+
+    /* --------------------------------------------------- age band, gender */
+    var bands = LDD.groupBy(rows, function (r) { return LDD.bandOf(r[LDD.F.age]); }, raw.age_bands);
+    LDD.barList(document.getElementById('band-bars'), bands.map(function (b, i) {
+      return {
+        label: b.name, value: b.revenue, valueText: f.compact(b.revenue),
+        color: LDD.seqStep(1 - i / Math.max(1, bands.length - 1)),
+        tip: '<div class="t-title">' + b.name + '</div>'
+           + '<div class="t-row"><span>Revenue</span><span>' + f.money(b.revenue) + '</span></div>'
+           + '<div class="t-row"><span>Transactions</span><span>' + f.int(b.lines) + '</span></div>'
+           + '<div class="t-note">Click to filter</div>'
+      };
+    }));
+    Array.prototype.forEach.call(
+      document.querySelectorAll('#band-bars .bar-track'), function (t, i) {
+        t.style.cursor = 'pointer';
+        t.addEventListener('click', function () { toggle(filters.band, bands[i].name); });
+      });
+
+    var genders = LDD.groupBy(rows, function (r) { return raw.genders[r[LDD.F.gender]]; });
+    document.getElementById('gender-legend').innerHTML = genders.map(function (g, i) {
+      return '<span class="legend-item"><span class="swatch" style="background:var(--series-'
+        + (i + 1) + ')"></span>' + g.name + '</span>';
+    }).join('');
+    LDD.barList(document.getElementById('gender-bars'), genders.map(function (g, i) {
+      return {
+        label: g.name, value: g.revenue, valueText: f.compact(g.revenue),
+        color: 'var(--series-' + (i + 1) + ')',
+        tip: '<div class="t-title">' + g.name + '</div>'
+           + '<div class="t-row"><span>Revenue</span><span>' + f.money(g.revenue) + '</span></div>'
+           + '<div class="t-note">Click to filter</div>'
+      };
+    }));
+    Array.prototype.forEach.call(
+      document.querySelectorAll('#gender-bars .bar-track'), function (t, i) {
+        t.style.cursor = 'pointer';
+        t.addEventListener('click', function () { toggle(filters.gender, genders[i].name); });
+      });
+
+    /* ------------------------------------------------------------ scatter */
+    LDD.scatter(document.getElementById('scatter'),
+      cities.map(function (c, i) {
+        return { name: c.name, x: c.lines, y: c.revenue,
+                 color: LDD.seqStep(1 - i / Math.max(1, cities.length - 1)) };
+      }),
+      { xLabel: 'Transactions recorded', yLabel: 'Revenue',
+        onClick: function (name) { toggle(filters.city, name); } });
+
+    /* ------------------------------------------------------- day of week */
+    var DOW = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    var dow = LDD.groupBy(rows, function (r) {
+      var p = r[LDD.F.date].split('-');
+      return DOW[(new Date(+p[0], +p[1] - 1, +p[2]).getDay() + 6) % 7];
+    }, DOW);
+    var meanDow = dow.reduce(function (s, x) { return s + x.revenue; }, 0) / (dow.length || 1);
+    LDD.columns(document.getElementById('dow-cols'), dow.map(function (x) {
+      return { name: x.name, value: x.revenue, lines: x.lines };
+    }), { mean: meanDow });
+
+    /* --------------------------------------------------------- through-line */
+    var topCat = cats[0], topCity = cities[0];
+    document.getElementById('through-line').innerHTML =
+      '<b>What this page is for.</b> Under the current selection, '
+      + topCat.name + ' records ' + f.pct(topCat.revenue / rev) + ' of revenue and '
+      + topCity.name + ' records ' + f.pct(topCity.revenue / rev) + '. Change a filter and '
+      + 'different names will take those positions. That is the finding: this file '
+      + 'describes activity accurately and separates nothing from anything else, so it '
+      + 'can report what happened but cannot tell anyone where to spend next.';
+  }
+
+  function tile(label, value, sub, extra) {
+    return '<div class="kpi is-compact"><div class="label">' + label + '</div>'
+      + '<div class="value">' + value + '</div>'
+      + (sub ? '<div class="sub">' + sub + '</div>' : '')
+      + (extra || '') + '</div>';
+  }
+  function pctOf(a, b) { return b ? LDD.fmt.pct(a / b) : '0%'; }
+  function toggle(set, v) { if (set.has(v)) set.delete(v); else set.add(v); repaint(); }
+})();
+</script>
+</body>
+</html>

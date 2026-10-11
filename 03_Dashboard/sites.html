@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PMARIS Sites and Equipment</title>
+<link rel="stylesheet" href="styles.css?v=4.4">
+</head>
+<body>
+<header class="topbar"><div class="topbar-inner">
+  <div class="brand">PMARIS <span>Asset Reliability</span></div>
+  <nav class="pages">
+    <a href="index.html">Overview</a>
+    <a href="dashboard.html">Explorer</a>
+    <a href="levers.html">Levers</a>
+    <a href="sites.html">Sites &amp; Equipment</a>
+    <a href="watchlist.html">Risk Watchlist</a>
+    <a href="quality.html">Data &amp; Method</a>
+  </nav>
+  <div class="spacer"></div>
+  <span class="live"><span class="dot"></span><span class="live-text">connecting…</span></span>
+  <button class="theme-btn" type="button">Dark</button>
+</div></header>
+
+<main class="wrap">
+  <section class="page-head">
+    <div class="eyebrow">Sites &amp; Equipment</div>
+    <h1>Heavy industry carries more loss per window, but site explains little of it</h1>
+    <p class="insight">The cement and drilling sites average about <b>1.5x</b> the revenue loss of the lab and diagnostics
+      sites, and the gap is statistically real. It is also small: site explains about <b>1.3%</b> of the variation in loss,
+      against <b>6.5%</b> for spare-parts status. Criticality matters more for money: critical windows lose
+      <b class="js-critical-vs-low">4.4x</b> what low-criticality windows lose.</p>
+  </section>
+
+  <div class="notice js-stale" hidden><span class="ico">⚠</span><span class="js-stale-text"></span></div>
+  <div class="notice"><span class="ico">ℹ</span><span><strong>No verdict on manufacturer or shift.</strong> Both were tested
+    and neither shows any difference (ANOVA p &gt; 0.4 on downtime, η² under 0.1%). They are shown for completeness, not as rankings.</span></div>
+
+  <div class="grid two">
+    <section class="panel">
+      <h2>Mean revenue loss by site, with 95% intervals <span class="study-tag">study</span></h2>
+      <p class="note">EGP per observation. The two lighter-industry sites sit clearly lower; the four heavy sites overlap each other.</p>
+      <div id="bs-site"></div>
+    </section>
+    <section class="panel">
+      <h2>Mean revenue loss by criticality, with 95% intervals <span class="study-tag">study</span></h2>
+      <p class="note">EGP per observation. Every step in criticality is clear of the next: a medium-sized effect (η² 0.064).</p>
+      <div id="bs-crit"></div>
+    </section>
+  </div>
+
+  <div class="grid two">
+    <section class="panel">
+      <h2>High-risk share by asset class</h2>
+      <p class="note">% of observations with failure probability ≥ 50%. Live.</p>
+      <div id="class"></div>
+    </section>
+    <section class="panel">
+      <h2>High-risk share by environment severity</h2>
+      <p class="note">% of observations high-risk. Severe environments run about 3.8x controlled ones. Live.</p>
+      <div id="env"></div>
+    </section>
+  </div>
+
+  <div class="grid two">
+    <section class="panel">
+      <h2>Mean downtime by manufacturer group</h2>
+      <p class="note">Hours per observation. No significant difference (see Data &amp; Method).</p>
+      <div id="oem"></div>
+    </section>
+    <section class="panel">
+      <h2>Mean downtime by operating shift</h2>
+      <p class="note">Hours per observation. No significant difference.</p>
+      <div id="shift"></div>
+    </section>
+  </div>
+
+  <section class="panel" style="margin-top:var(--gap)">
+    <h2>Site profile table</h2>
+    <p class="note">Live. The accessible view of every site figure on this page.</p>
+    <div id="tbl"></div>
+  </section>
+
+  <div class="through-line"><b>So what.</b> Do not run a site-versus-site campaign. Site explains about 1.3% of the
+    variation in loss; spare-parts status explains five times as much. Route effort by criticality and by the levers instead, which apply at every site.</div>
+  <footer class="foot">Intervals: 2,000 bootstrap resamples, study constants. Bars and table: live feed.</footer>
+</main>
+
+<script src="app.js?v=4.4"></script>
+<script>
+const L = LDD, { fmt, mount, tipHtml } = L;
+function render(d) {
+  const st = d.study;
+  if (st) {
+    const b = st.bootstrap['Site|Revenue_Loss_EGP_30D'];
+    const rows = Object.entries(b).sort((x, y) => y[1].mean - x[1].mean);
+    const mx = Math.max(...rows.map(r => r[1].mean));
+    L.dotWhisker(mount('bs-site'), rows.map(([k, v]) => ({ name: k, mean: v.mean, lo: v.lo, hi: v.hi, n: v.n, color: L.seqFor(v.mean, mx) })), { fmt: fmt.compact, zero: true });
+    const c = st.bootstrap['Criticality_Class|Revenue_Loss_EGP_30D'];
+    L.dotWhisker(mount('bs-crit'), ['Critical', 'High', 'Medium', 'Low'].map(k => ({ name: k, mean: c[k].mean, lo: c[k].lo, hi: c[k].hi, n: c[k].n, color: L.seqFor(c[k].mean, c.Critical.mean) })), { fmt: fmt.compact, zero: true });
+  }
+  const bars = (id, dim, key, f, keepOrder) => {
+    const g = d.by_dimension[dim].slice();
+    if (!keepOrder) g.sort((a, b) => b[key] - a[key]);
+    const max = Math.max(...g.map(x => x[key]));
+    L.barList(mount(id), g.map(x => ({ label: x.name, value: x[key], valueText: f(x[key]),
+      color: keepOrder === 'flat' ? 'var(--neutral)' : L.seqFor(x[key], max),
+      tip: tipHtml(x.name, [['Mean loss', fmt.egpc(x.loss_mean)], ['Mean downtime', fmt.hrs(x.downtime_mean)],
+                            ['High-risk share', fmt.pct(x.high_risk_pct)], ['Observations', fmt.int(x.n)]]) })), { wide: true });
+  };
+  bars('class', 'Asset_Class', 'high_risk_pct', v => fmt.pct(v));
+  bars('env', 'Environment_Severity', 'high_risk_pct', v => fmt.pct(v), true);
+  bars('oem', 'Manufacturer_Group', 'downtime_mean', fmt.hrs, 'flat');
+  bars('shift', 'Operating_Shift', 'downtime_mean', fmt.hrs, 'flat');
+  L.dataTable(mount('tbl'), [{ label: 'Site' }, { label: 'Obs', num: 1 }, { label: 'Mean loss', num: 1 }, { label: 'Mean downtime', num: 1 },
+    { label: 'Failure prob.', num: 1 }, { label: 'Health', num: 1 }, { label: 'High-risk', num: 1 }, { label: 'Emergency WOs', num: 1 }],
+    d.by_dimension.Site.map(x => [x.name, fmt.int(x.n), fmt.egpc(x.loss_mean), fmt.hrs(x.downtime_mean), fmt.pct(x.fp_mean),
+      x.health_mean.toFixed(1), fmt.pct(x.high_risk_pct), fmt.pct(x.emergency_pct)]));
+}
+LDD.start(render);
+</script>
+</body>
+</html>
